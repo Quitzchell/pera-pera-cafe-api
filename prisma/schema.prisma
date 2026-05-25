@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SessionStatus {
+  pending
+  active
+  ended
+}
+
+model Session {
+  id              String        @id @default(cuid())
+  title           String
+  source_language String
+  target_language String
+  join_code       String        @unique
+  status          SessionStatus @default(pending)
+  created_at      DateTime      @default(now())
+  ended_at        DateTime?
+  participants    Participant[]
+}
+
+enum ParticipantRole {
+  host
+  guest
+}
+
+model Participant {
+  id              String          @id @default(cuid())
+  session_id      String
+  session         Session         @relation(fields: [session_id], references: [id], onDelete: Cascade)
+  name            String
+  native_language String
+  target_language String
+  role            ParticipantRole @default(guest)
+  joined_at       DateTime        @default(now())
+  left_at         DateTime?
+
+  @@index([session_id])
+}
