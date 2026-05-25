@@ -6,6 +6,8 @@ services:
     container_name: pera-pera-cafe-nest
     ports:
       - '3000:3000'
+    env_file:
+      - .env
     volumes:
       - .:/app
       - ./node_modules:/app/node_modules
