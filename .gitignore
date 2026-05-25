@@ -12,3 +12,5 @@ yarn-error.log*
 
 .vscode/*
 /generated/prisma
+
+.DS_Store
