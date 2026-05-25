@@ -1,5 +1,9 @@
 export class CreateSessionDto {
   title: string;
-  source_language: string;
-  target_language: string;
+  targetLanguage: string;
+  host: {
+    displayName: string;
+    nativeLanguage: string;
+    proficiencyLevels: string[];
+  };
 }
