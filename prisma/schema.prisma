@@ -29,15 +29,16 @@ model Session {
 }
 
 model Participant {
-  id              String    @id @default(cuid())
-  session_id      String
-  session         Session   @relation(fields: [session_id], references: [id], onDelete: Cascade)
-  name            String
-  native_language String
-  target_language String
-  is_host         Boolean   @default(false)
-  joined_at       DateTime  @default(now())
-  left_at         DateTime?
+  id                 String    @id @default(cuid())
+  session_id         String
+  session            Session   @relation(fields: [session_id], references: [id], onDelete: Cascade)
+  name               String
+  native_language    String
+  target_language    String
+  proficiency_levels String[]
+  is_host            Boolean   @default(false)
+  joined_at          DateTime  @default(now())
+  left_at            DateTime?
 
   @@index([session_id])
 }
