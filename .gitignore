@@ -11,6 +11,7 @@ yarn-error.log*
 .pnp.js
 
 .vscode/*
+.idea/
 /generated/prisma
 
 .DS_Store
