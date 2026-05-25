@@ -28,20 +28,15 @@ model Session {
   participants    Participant[]
 }
 
-enum ParticipantRole {
-  host
-  guest
-}
-
 model Participant {
-  id              String          @id @default(cuid())
+  id              String    @id @default(cuid())
   session_id      String
-  session         Session         @relation(fields: [session_id], references: [id], onDelete: Cascade)
+  session         Session   @relation(fields: [session_id], references: [id], onDelete: Cascade)
   name            String
   native_language String
   target_language String
-  role            ParticipantRole @default(guest)
-  joined_at       DateTime        @default(now())
+  is_host         Boolean   @default(false)
+  joined_at       DateTime  @default(now())
   left_at         DateTime?
 
   @@index([session_id])
