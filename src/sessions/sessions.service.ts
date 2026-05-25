@@ -8,11 +8,11 @@ export class SessionsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateSessionDto) {
-    const { title, targetLanguage, host } = dto;
+    const { title, targetLanguage, sourceLanguage, host } = dto;
     const session = await this.prisma.session.create({
       data: {
         title,
-        source_language: host.nativeLanguage,
+        source_language: sourceLanguage,
         target_language: targetLanguage,
         join_code: generateJoinCode(),
         participants: {
