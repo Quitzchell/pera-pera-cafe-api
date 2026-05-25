@@ -1,14 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { CreateSessionDto } from './dto/create-session.dto';
-import { SessionsService } from './sessions.service';
-import { Session } from './interfaces/session';
+import {Body, Controller, Post} from '@nestjs/common';
+import {CreateSessionDto} from './dto/create-session.dto';
+import {SessionsService} from './sessions.service';
 
 @Controller('sessions')
 export class SessionsController {
-  constructor(private readonly sessionService: SessionsService) {}
+    constructor(private readonly sessionsService: SessionsService) {
+    }
 
-  @Post()
-  async create(@Body() createSessionDto: CreateSessionDto): Promise<Session> {
-    return this.sessionService.create(createSessionDto);
-  }
+    @Post()
+    create(@Body() createSessionDto: CreateSessionDto) {
+        return this.sessionsService.create(createSessionDto);
+    }
 }
