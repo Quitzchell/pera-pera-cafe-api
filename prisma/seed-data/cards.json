@@ -1,0 +1,1442 @@
+[
+  {
+    "id": "c1000000-0000-0000-0000-000000000001",
+    "question": "What is your name?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Wat is je naam?",
+      "Japanese": "お名前は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Onamae wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000002",
+    "question": "Where are you from?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Waar kom je vandaan?",
+      "Japanese": "どちらから来ましたか？"
+    },
+    "romanizations": {
+      "Japanese": "Dochira kara kimashita ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000003",
+    "question": "How old are you?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Hoe oud ben je?",
+      "Japanese": "何歳ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Nansai desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000004",
+    "question": "What is your favorite food?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Wat is je favoriete eten?",
+      "Japanese": "好きな食べ物は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Sukina tabemono wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000005",
+    "question": "Do you have any pets?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Heb je huisdieren?",
+      "Japanese": "ペットを飼っていますか？"
+    },
+    "romanizations": {
+      "Japanese": "Petto o katte imasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000006",
+    "question": "What color do you like?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Welke kleur vind je mooi?",
+      "Japanese": "何色が好きですか？"
+    },
+    "romanizations": {
+      "Japanese": "Naniiro ga suki desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000007",
+    "question": "Do you like coffee or tea?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Hou je van koffie of thee?",
+      "Japanese": "コーヒーとお茶、どちらが好きですか？"
+    },
+    "romanizations": {
+      "Japanese": "Kōhī to ocha, dochira ga suki desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000008",
+    "question": "Do you have brothers or sisters?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Heb je broers of zussen?",
+      "Japanese": "兄弟や姉妹はいますか？"
+    },
+    "romanizations": {
+      "Japanese": "Kyōdai ya shimai wa imasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000009",
+    "question": "What day is it today?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Welke dag is het vandaag?",
+      "Japanese": "今日は何曜日ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Kyō wa nan'yōbi desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000010",
+    "question": "What is the weather like today?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Wat voor weer is het vandaag?",
+      "Japanese": "今日の天気はどうですか？"
+    },
+    "romanizations": {
+      "Japanese": "Kyō no tenki wa dō desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000011",
+    "question": "What do you do for a living?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Wat doe je voor werk?",
+      "Japanese": "お仕事は何をしていますか？"
+    },
+    "romanizations": {
+      "Japanese": "Oshigoto wa nani o shite imasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000012",
+    "question": "Where do you live?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Waar woon je?",
+      "Japanese": "どこに住んでいますか？"
+    },
+    "romanizations": {
+      "Japanese": "Doko ni sunde imasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000013",
+    "question": "What is your favorite season?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Wat is je favoriete seizoen?",
+      "Japanese": "好きな季節は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Sukina kisetsu wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000014",
+    "question": "What time do you wake up?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Hoe laat sta je op?",
+      "Japanese": "何時に起きますか？"
+    },
+    "romanizations": {
+      "Japanese": "Nanji ni okimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000015",
+    "question": "What kind of music do you like?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Wat voor muziek vind je leuk?",
+      "Japanese": "どんな音楽が好きですか？"
+    },
+    "romanizations": {
+      "Japanese": "Donna ongaku ga suki desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000016",
+    "question": "What is your favorite fruit?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Wat is je favoriete fruit?",
+      "Japanese": "好きな果物は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Sukina kudamono wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000017",
+    "question": "Can you cook?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Kun je koken?",
+      "Japanese": "料理はできますか？"
+    },
+    "romanizations": {
+      "Japanese": "Ryōri wa dekimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000018",
+    "question": "What sports do you like?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Welke sporten vind je leuk?",
+      "Japanese": "どんなスポーツが好きですか？"
+    },
+    "romanizations": {
+      "Japanese": "Donna supōtsu ga suki desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000019",
+    "question": "Do you have a hobby?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Heb je een hobby?",
+      "Japanese": "趣味はありますか？"
+    },
+    "romanizations": {
+      "Japanese": "Shumi wa arimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000020",
+    "question": "What is your favorite drink?",
+    "proficiency_level": "A1",
+    "translations": {
+      "Dutch": "Wat is je favoriete drankje?",
+      "Japanese": "好きな飲み物は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Sukina nomimono wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000021",
+    "question": "What did you do last weekend?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat heb je afgelopen weekend gedaan?",
+      "Japanese": "先週末は何をしましたか？"
+    },
+    "romanizations": {
+      "Japanese": "Senshūmatsu wa nani o shimashita ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000022",
+    "question": "Can you describe your family?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Kun je je familie beschrijven?",
+      "Japanese": "ご家族について教えてもらえますか？"
+    },
+    "romanizations": {
+      "Japanese": "Gokazoku ni tsuite oshiete moraemasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000023",
+    "question": "What is your favorite holiday?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat is je favoriete feestdag?",
+      "Japanese": "好きな祝日は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Sukina shukujitsu wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000024",
+    "question": "How do you usually get to work or school?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Hoe ga je meestal naar je werk of school?",
+      "Japanese": "普段、仕事や学校にはどうやって行きますか？"
+    },
+    "romanizations": {
+      "Japanese": "Fudan, shigoto ya gakkō ni wa dō yatte ikimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000025",
+    "question": "What kind of movies do you enjoy?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Naar wat voor films kijk je graag?",
+      "Japanese": "どんな映画が好きですか？"
+    },
+    "romanizations": {
+      "Japanese": "Donna eiga ga suki desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000026",
+    "question": "What is your typical breakfast?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat eet je meestal als ontbijt?",
+      "Japanese": "いつもどんな朝ごはんを食べますか？"
+    },
+    "romanizations": {
+      "Japanese": "Itsumo donna asagohan o tabemasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000027",
+    "question": "Have you ever been to another country?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Ben je ooit in een ander land geweest?",
+      "Japanese": "外国に行ったことはありますか？"
+    },
+    "romanizations": {
+      "Japanese": "Gaikoku ni itta koto wa arimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000028",
+    "question": "What is your favorite place in your town?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat is je favoriete plek in je stad?",
+      "Japanese": "あなたの街で一番好きな場所はどこですか？"
+    },
+    "romanizations": {
+      "Japanese": "Anata no machi de ichiban sukina basho wa doko desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000029",
+    "question": "What do you usually do after work?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat doe je meestal na je werk?",
+      "Japanese": "仕事の後はいつも何をしますか？"
+    },
+    "romanizations": {
+      "Japanese": "Shigoto no ato wa itsumo nani o shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000030",
+    "question": "Can you describe one of your friends?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Kun je één van je vrienden beschrijven?",
+      "Japanese": "友達の一人について話してもらえますか？"
+    },
+    "romanizations": {
+      "Japanese": "Tomodachi no hitori ni tsuite hanashite moraemasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000031",
+    "question": "What was the last book you read?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat is het laatste boek dat je gelezen hebt?",
+      "Japanese": "最近読んだ本は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Saikin yonda hon wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000032",
+    "question": "What kind of music do you listen to?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Naar wat voor muziek luister je?",
+      "Japanese": "どんな音楽を聴きますか？"
+    },
+    "romanizations": {
+      "Japanese": "Donna ongaku o kikimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000033",
+    "question": "Do you prefer the city or the countryside?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Geef jij de voorkeur aan de stad of het platteland?",
+      "Japanese": "都会と田舎、どちらが好きですか？"
+    },
+    "romanizations": {
+      "Japanese": "Tokai to inaka, dochira ga suki desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000034",
+    "question": "What do you like to do when it rains?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat doe je graag als het regent?",
+      "Japanese": "雨の日には何をするのが好きですか？"
+    },
+    "romanizations": {
+      "Japanese": "Ame no hi ni wa nani o suru no ga suki desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000035",
+    "question": "What is something you want to buy soon?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat wil je binnenkort kopen?",
+      "Japanese": "近いうちに買いたいものは何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Chikai uchi ni kaitai mono wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000036",
+    "question": "Can you describe a dish from your country?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Kun je een gerecht uit je land beschrijven?",
+      "Japanese": "自分の国の料理を一つ紹介してもらえますか？"
+    },
+    "romanizations": {
+      "Japanese": "Jibun no kuni no ryōri o hitotsu shōkai shite moraemasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000037",
+    "question": "What was your favorite subject at school?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat was je lievelingsvak op school?",
+      "Japanese": "学校で一番好きだった科目は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Gakkō de ichiban suki datta kamoku wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000038",
+    "question": "Do you prefer summer or winter?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Houd jij meer van de zomer of de winter?",
+      "Japanese": "夏と冬、どちらが好きですか？"
+    },
+    "romanizations": {
+      "Japanese": "Natsu to fuyu, dochira ga suki desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000039",
+    "question": "What do you usually do on your birthday?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Wat doe je meestal op je verjaardag?",
+      "Japanese": "誕生日にはいつも何をしますか？"
+    },
+    "romanizations": {
+      "Japanese": "Tanjōbi ni wa itsumo nani o shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000040",
+    "question": "Have you learned a new skill recently?",
+    "proficiency_level": "A2",
+    "translations": {
+      "Dutch": "Heb je onlangs iets nieuws geleerd?",
+      "Japanese": "最近、新しく覚えたことはありますか？"
+    },
+    "romanizations": {
+      "Japanese": "Saikin, atarashiku oboeta koto wa arimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000041",
+    "question": "What do you like to do on weekends?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Wat doe je graag in het weekend?",
+      "Japanese": "週末は何をするのが好きですか？"
+    },
+    "romanizations": {
+      "Japanese": "Shūmatsu wa nani o suru no ga suki desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000042",
+    "question": "Tell me about a trip you will never forget.",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Vertel eens over een reis die je nooit zult vergeten.",
+      "Japanese": "忘れられない旅行について話してください。"
+    },
+    "romanizations": {
+      "Japanese": "Wasurerarenai ryokō ni tsuite hanashite kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000043",
+    "question": "What is your favorite childhood memory?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Wat is je mooiste jeugdherinnering?",
+      "Japanese": "子供の頃の一番の思い出は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Kodomo no koro no ichiban no omoide wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000044",
+    "question": "How has your hometown changed in recent years?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Hoe is je woonplaats de afgelopen jaren veranderd?",
+      "Japanese": "あなたの故郷はここ数年でどう変わりましたか？"
+    },
+    "romanizations": {
+      "Japanese": "Anata no furusato wa koko sūnen de dō kawarimashita ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000045",
+    "question": "Can you describe a typical day in your life?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Kun je een typische dag in je leven beschrijven?",
+      "Japanese": "あなたの普通の一日について教えてください。"
+    },
+    "romanizations": {
+      "Japanese": "Anata no futsū no ichinichi ni tsuite oshiete kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000046",
+    "question": "What is a skill you would like to learn and why?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Welke vaardigheid zou je willen leren, en waarom?",
+      "Japanese": "身につけたいスキルは何ですか？その理由も教えてください。"
+    },
+    "romanizations": {
+      "Japanese": "Mi ni tsuketai sukiru wa nan desu ka? Sono riyū mo oshiete kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000047",
+    "question": "Tell me about the last concert or event you attended.",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Vertel eens over het laatste concert of evenement waar je bent geweest.",
+      "Japanese": "最近行ったコンサートやイベントについて話してください。"
+    },
+    "romanizations": {
+      "Japanese": "Saikin itta konsāto ya ibento ni tsuite hanashite kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000048",
+    "question": "What do you usually do to relax after a long day?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Wat doe je meestal om te ontspannen na een lange dag?",
+      "Japanese": "長い一日の後、どうやってリラックスしますか？"
+    },
+    "romanizations": {
+      "Japanese": "Nagai ichinichi no ato, dō yatte rirakkusu shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000049",
+    "question": "Describe a tradition from your country that you enjoy.",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Beschrijf een traditie uit jouw land waar je van houdt.",
+      "Japanese": "あなたの国で気に入っている伝統について説明してください。"
+    },
+    "romanizations": {
+      "Japanese": "Anata no kuni de ki ni itte iru dentō ni tsuite setsumei shite kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000050",
+    "question": "What was the most interesting place you visited last year?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Wat was de interessantste plek die je vorig jaar hebt bezocht?",
+      "Japanese": "去年訪れた中で一番面白かった場所はどこですか？"
+    },
+    "romanizations": {
+      "Japanese": "Kyonen otozureta naka de ichiban omoshirokatta basho wa doko desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000051",
+    "question": "Tell me about a person who has influenced your life.",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Vertel eens over iemand die veel invloed op je leven heeft gehad.",
+      "Japanese": "あなたの人生に影響を与えた人について話してください。"
+    },
+    "romanizations": {
+      "Japanese": "Anata no jinsei ni eikyō o ataeta hito ni tsuite hanashite kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000052",
+    "question": "What are your plans for the next year?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Wat zijn je plannen voor het komende jaar?",
+      "Japanese": "来年の予定は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Rainen no yotei wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000053",
+    "question": "What kind of food do you cook when friends visit?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Wat kook je meestal als er vrienden op bezoek komen?",
+      "Japanese": "友達が来るときは、どんな料理を作りますか？"
+    },
+    "romanizations": {
+      "Japanese": "Tomodachi ga kuru toki wa, donna ryōri o tsukurimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000054",
+    "question": "Describe your ideal vacation.",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Beschrijf je ideale vakantie.",
+      "Japanese": "理想の休暇について教えてください。"
+    },
+    "romanizations": {
+      "Japanese": "Risō no kyūka ni tsuite oshiete kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000055",
+    "question": "Which phase of life do you think is the most beautiful?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Welke levensfase is naar jouw idee de mooiste?",
+      "Japanese": "人生のどの時期が一番美しいと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Jinsei no dono jiki ga ichiban utsukushii to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000056",
+    "question": "Tell me about your favorite restaurant.",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Vertel eens over je favoriete restaurant.",
+      "Japanese": "お気に入りのレストランについて教えてください。"
+    },
+    "romanizations": {
+      "Japanese": "Okiniiri no resutoran ni tsuite oshiete kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000057",
+    "question": "What do you miss most when you are away from home?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Wat mis je het meest als je niet thuis bent?",
+      "Japanese": "家を離れているとき、何が一番恋しくなりますか？"
+    },
+    "romanizations": {
+      "Japanese": "Ie o hanarete iru toki, nani ga ichiban koishiku narimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000058",
+    "question": "Describe a book or film that made you think.",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Beschrijf een boek of film die je aan het denken heeft gezet.",
+      "Japanese": "考えさせられた本や映画について教えてください。"
+    },
+    "romanizations": {
+      "Japanese": "Kangaesaserareta hon ya eiga ni tsuite oshiete kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000059",
+    "question": "What kind of weather makes you happiest?",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Wat voor weer maakt jou het gelukkigst?",
+      "Japanese": "どんな天気のときが一番幸せですか？"
+    },
+    "romanizations": {
+      "Japanese": "Donna tenki no toki ga ichiban shiawase desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000060",
+    "question": "Tell me about a time you tried something new.",
+    "proficiency_level": "B1",
+    "translations": {
+      "Dutch": "Vertel eens over een keer dat je iets nieuws hebt geprobeerd.",
+      "Japanese": "新しいことに挑戦したときのことを教えてください。"
+    },
+    "romanizations": {
+      "Japanese": "Atarashii koto ni chōsen shita toki no koto o oshiete kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000061",
+    "question": "How would you describe your hometown to someone who has never been there?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Hoe zou je je woonplaats beschrijven aan iemand die er nog nooit is geweest?",
+      "Japanese": "あなたの故郷を行ったことのない人にどのように説明しますか？"
+    },
+    "romanizations": {
+      "Japanese": "Anata no furusato o itta koto no nai hito ni dono yō ni setsumei shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000062",
+    "question": "Tell me about your country's culture.",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Vertel eens over de cultuur van jouw land.",
+      "Japanese": "あなたの国の文化について教えてください。"
+    },
+    "romanizations": {
+      "Japanese": "Anata no kuni no bunka ni tsuite oshiete kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000063",
+    "question": "What do you think are the advantages and disadvantages of living in a big city?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Wat zijn volgens jou de voor- en nadelen van het leven in een grote stad?",
+      "Japanese": "大都市に住むことの利点と欠点は何だと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Daitoshi ni sumu koto no riten to ketten wa nan da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000064",
+    "question": "Do you think social media does more good or harm? Why?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Denk je dat sociale media meer goed of meer kwaad doen? Waarom?",
+      "Japanese": "ソーシャルメディアは人々にとって良いものだと思いますか、悪いものだと思いますか？その理由は？"
+    },
+    "romanizations": {
+      "Japanese": "Sōsharu media wa hitobito ni totte ii mono da to omoimasu ka, warui mono da to omoimasu ka? Sono riyū wa?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000065",
+    "question": "How has technology changed the way you communicate with friends?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Hoe heeft technologie de manier waarop je met vrienden communiceert veranderd?",
+      "Japanese": "テクノロジーは友達とのコミュニケーションの仕方をどのように変えましたか？"
+    },
+    "romanizations": {
+      "Japanese": "Tekunorojī wa tomodachi to no komyunikēshon no shikata o dono yō ni kaemashita ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000066",
+    "question": "What qualities do you think make a good leader?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Welke eigenschappen maken volgens jou een goede leider?",
+      "Japanese": "良いリーダーに必要な資質は何だと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Yoi rīdā ni hitsuyōna shishitsu wa nan da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000067",
+    "question": "Do you think people should have to learn a second language at school? Why?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Vind je dat leerlingen op school verplicht een tweede taal moeten leren? Waarom?",
+      "Japanese": "学校で第二外国語を必修にするべきだと思いますか？理由も教えてください。"
+    },
+    "romanizations": {
+      "Japanese": "Gakkō de daini gaikokugo o hisshū ni suru beki da to omoimasu ka? Riyū mo oshiete kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000068",
+    "question": "What is something about your country that often surprises foreigners?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Wat is iets aan jouw land dat mensen uit het buitenland vaak verrast?",
+      "Japanese": "あなたの国について、外国人がよく驚くことは何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Anata no kuni ni tsuite, gaikokujin ga yoku odoroku koto wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000069",
+    "question": "How do you feel about remote work compared to working in an office?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Wat vind je van thuiswerken ten opzichte van werken op kantoor?",
+      "Japanese": "リモートワークとオフィス勤務について、どう感じていますか？"
+    },
+    "romanizations": {
+      "Japanese": "Rimōto wāku to ofisu kinmu ni tsuite, dō kanjite imasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000070",
+    "question": "What is a cultural difference you found difficult when traveling?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Welk cultuurverschil vond je lastig toen je op reis was?",
+      "Japanese": "旅行中に戸惑った文化の違いは何でしたか？"
+    },
+    "romanizations": {
+      "Japanese": "Ryokōchū ni tomadotta bunka no chigai wa nan deshita ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000071",
+    "question": "Do you think money can buy happiness? Explain your view.",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Denk je dat geld geluk kan kopen? Leg je standpunt uit.",
+      "Japanese": "お金で幸せは買えると思いますか？あなたの考えを聞かせてください。"
+    },
+    "romanizations": {
+      "Japanese": "Okane de shiawase wa kaeru to omoimasu ka? Anata no kangae o kikasete kudasai."
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000072",
+    "question": "What role does family play in your country's culture?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Welke rol speelt familie in de cultuur van je land?",
+      "Japanese": "あなたの国の文化において、家族はどんな役割を果たしていますか？"
+    },
+    "romanizations": {
+      "Japanese": "Anata no kuni no bunka ni oite, kazoku wa donna yakuwari o hatashite imasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000073",
+    "question": "How do you feel about the food trends in your country right now?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Wat vind je van hoe de eetcultuur in jouw land er op dit moment uitziet?",
+      "Japanese": "今のあなたの国の食のトレンドについて、どう感じていますか？"
+    },
+    "romanizations": {
+      "Japanese": "Ima no anata no kuni no shoku no torendo ni tsuite, dō kanjite imasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000074",
+    "question": "Do you think it is important to preserve old buildings? Why?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Vind je het belangrijk om oude gebouwen te behouden? Waarom?",
+      "Japanese": "古い建物を保存することは大切だと思いますか？その理由は？"
+    },
+    "romanizations": {
+      "Japanese": "Furui tatemono o hozon suru koto wa taisetsu da to omoimasu ka? Sono riyū wa?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000075",
+    "question": "What is something you used to believe but no longer do?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Wat is iets waar je vroeger in geloofde, maar nu niet meer?",
+      "Japanese": "以前は信じていたけれど、今はそう思わないことは何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Izen wa shinjite ita keredo, ima wa sō omowanai koto wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000076",
+    "question": "How do you think children today are different from children thirty years ago?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Hoe verschillen kinderen van nu volgens jou van kinderen dertig jaar geleden?",
+      "Japanese": "今の子供たちは、三十年前の子供たちとどう違うと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Ima no kodomotachi wa, sanjūnen mae no kodomotachi to dō chigau to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000077",
+    "question": "What makes a friendship last a long time?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Wat maakt dat een vriendschap lang kan duren?",
+      "Japanese": "長く続く友情に必要なものは何だと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Nagaku tsuzuku yūjō ni hitsuyōna mono wa nan da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000078",
+    "question": "Do you think people should talk about their feelings more openly?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Vind je dat mensen opener over hun gevoelens zouden moeten praten?",
+      "Japanese": "人はもっと自分の気持ちをオープンに話すべきだと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Hito wa motto jibun no kimochi o ōpun ni hanasu beki da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000079",
+    "question": "What is the hardest decision you have had to make recently?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Wat is de moeilijkste beslissing die je recent hebt moeten nemen?",
+      "Japanese": "最近下した中で、一番難しかった決断は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Saikin kudashita naka de, ichiban muzukashikatta ketsudan wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000080",
+    "question": "How do you balance work and personal life?",
+    "proficiency_level": "B2",
+    "translations": {
+      "Dutch": "Hoe houd jij de balans tussen werk en privéleven?",
+      "Japanese": "仕事とプライベートのバランスはどうやって取っていますか？"
+    },
+    "romanizations": {
+      "Japanese": "Shigoto to puraibēto no baransu wa dō yatte totte imasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000081",
+    "question": "What are the main challenges your generation faces compared to previous ones?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Wat zijn de grootste uitdagingen waarmee jouw generatie te maken heeft in vergelijking met eerdere generaties?",
+      "Japanese": "あなたの世代が前の世代と比べて直面している主な課題は何ですか？"
+    },
+    "romanizations": {
+      "Japanese": "Anata no sedai ga mae no sedai to kurabete chokumen shite iru omona kadai wa nan desu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000082",
+    "question": "How do you think technology has changed the way people form relationships?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Hoe heeft technologie volgens jou de manier waarop mensen relaties vormen veranderd?",
+      "Japanese": "テクノロジーは人々の関係の築き方をどのように変えたと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Tekunorojī wa hitobito no kankei no kizukikata o dono yō ni kaeta to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000083",
+    "question": "Should governments have the power to regulate artificial intelligence, and where would you draw the line?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Zouden overheden kunstmatige intelligentie moeten reguleren, en waar zou jij de grens trekken?",
+      "Japanese": "政府は人工知能を規制する権限を持つべきだと思いますか？また、その線引きはどこですべきだと考えますか？"
+    },
+    "romanizations": {
+      "Japanese": "Seifu wa jinkō chinō o kisei suru kengen o motsu beki da to omoimasu ka? Mata, sono senbiki wa doko de su beki da to kangaemasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000084",
+    "question": "What cultural values do you think are worth preserving in a globalized world?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Welke culturele waarden verdienen het om te worden bewaard in een geglobaliseerde wereld?",
+      "Japanese": "グローバル化した世界の中で、守るべき文化的価値観は何だと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Gurōbaru-ka shita sekai no naka de, mamoru beki bunkateki kachikan wa nan da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000085",
+    "question": "How do you think the meaning of work has shifted in the last few decades?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Hoe is de betekenis van werk volgens jou de laatste decennia veranderd?",
+      "Japanese": "働くことの意味は、ここ数十年でどのように変わったと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Hataraku koto no imi wa, koko sūjūnen de dono yō ni kawatta to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000086",
+    "question": "In your view, what is the most underrated quality in modern society?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Welke eigenschap wordt volgens jou het meest onderschat in de moderne samenleving?",
+      "Japanese": "現代社会で最も過小評価されている資質は何だと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Gendai shakai de mottomo kashō hyōka sarete iru shishitsu wa nan da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000087",
+    "question": "How would you explain the appeal of your country's art or literature to someone unfamiliar with it?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Hoe zou je de aantrekkingskracht van de kunst of literatuur uit je land uitleggen aan iemand die er niets van weet?",
+      "Japanese": "あなたの国の芸術や文学の魅力を、それをよく知らない人にどのように説明しますか？"
+    },
+    "romanizations": {
+      "Japanese": "Anata no kuni no geijutsu ya bungaku no miryoku o, sore o yoku shiranai hito ni dono yō ni setsumei shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000088",
+    "question": "To what extent do you think education systems prepare young people for real life?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "In hoeverre bereidt het onderwijs volgens jou jongeren voor op het echte leven?",
+      "Japanese": "教育制度は若者を実社会にどの程度まで備えさせていると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Kyōiku seido wa wakamono o jisshakai ni dono teido made sonaesasete iru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000089",
+    "question": "What do you see as the biggest tension between tradition and progress in your country?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Wat zie jij als de grootste spanning tussen traditie en vooruitgang in je land?",
+      "Japanese": "あなたの国で、伝統と進歩の間にある一番大きな緊張は何だと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Anata no kuni de, dentō to shinpo no aida ni aru ichiban ōkina kinchō wa nan da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000090",
+    "question": "Do you think it is easier or harder to change your social position today than it was for your parents?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Denk je dat het tegenwoordig makkelijker of moeilijker is om je maatschappelijke positie te veranderen dan voor jouw ouders?",
+      "Japanese": "自分の社会的地位を変えることは、ご両親の世代と比べて今は簡単になったと思いますか、それとも難しくなったと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Jibun no shakaiteki chii o kaeru koto wa, goryōshin no sedai to kurabete ima wa kantan ni natta to omoimasu ka, soretomo muzukashiku natta to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000091",
+    "question": "In what ways has your perspective on success shifted over time?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Op welke manieren is jouw kijk op succes in de loop van de tijd veranderd?",
+      "Japanese": "成功に対するあなたの見方は、時間とともにどのように変わりましたか？"
+    },
+    "romanizations": {
+      "Japanese": "Seikō ni taisuru anata no mikata wa, jikan to tomo ni dono yō ni kawarimashita ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000092",
+    "question": "How do you think cities should adapt to aging populations?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Hoe zouden steden zich moeten aanpassen aan een steeds oudere bevolking?",
+      "Japanese": "都市は高齢化する人口にどのように適応すべきだと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Toshi wa kōreika suru jinkō ni dono yō ni tekiō subeki da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000093",
+    "question": "What kind of leader does the world need right now, and why?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Wat voor soort leider heeft de wereld op dit moment nodig, en waarom?",
+      "Japanese": "今、世界にはどんなリーダーが必要だと思いますか？その理由は？"
+    },
+    "romanizations": {
+      "Japanese": "Ima, sekai ni wa donna rīdā ga hitsuyō da to omoimasu ka? Sono riyū wa?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000094",
+    "question": "Do you think it is possible to be truly objective when discussing your own culture?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Denk je dat het mogelijk is om echt objectief te zijn als je over je eigen cultuur praat?",
+      "Japanese": "自分自身の文化について語るとき、本当に客観的でいることは可能だと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Jibun jishin no bunka ni tsuite kataru toki, hontō ni kyakkanteki de iru koto wa kanō da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000095",
+    "question": "How do you think the way we consume news affects our worldview?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Hoe beïnvloedt de manier waarop we nieuws consumeren volgens jou ons wereldbeeld?",
+      "Japanese": "ニュースの受け取り方は、私たちの世界観にどのような影響を与えると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Nyūsu no uketorikata wa, watashitachi no sekaikan ni dono yōna eikyō o ataeru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000096",
+    "question": "What role, if any, should art play in addressing political issues?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Welke rol zou kunst volgens jou moeten spelen bij politieke kwesties?",
+      "Japanese": "芸術は政治的な問題に対して、どのような役割を果たすべきだと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Geijutsu wa seijiteki na mondai ni taishite, dono yōna yakuwari o hatasu beki da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000097",
+    "question": "How do you think the concept of privacy has evolved with the rise of the internet?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Hoe is het begrip privacy volgens jou veranderd met de opkomst van het internet?",
+      "Japanese": "インターネットの普及によって、プライバシーという概念はどう変わったと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Intānetto no fukyū ni yotte, puraibashī to iu gainen wa dō kawatta to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000098",
+    "question": "In what ways do you think the pandemic has permanently changed society?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Op welke manieren heeft de pandemie de samenleving volgens jou blijvend veranderd?",
+      "Japanese": "パンデミックは社会をどのように永続的に変えたと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Pandemikku wa shakai o dono yō ni eizokuteki ni kaeta to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000099",
+    "question": "How much freedom should a person have before it starts to affect others?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Hoeveel vrijheid mag iemand hebben voordat het anderen gaat raken?",
+      "Japanese": "他人に影響を及ぼし始める前に、人はどの程度の自由を持つべきだと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Tanin ni eikyō o oyoboshi hajimeru mae ni, hito wa dono teido no jiyū o motsu beki da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000100",
+    "question": "How do you think our relationship with nature will change over the next fifty years?",
+    "proficiency_level": "C1",
+    "translations": {
+      "Dutch": "Hoe zal onze relatie met de natuur de komende vijftig jaar volgens jou veranderen?",
+      "Japanese": "自然との関わり方は、これから五十年でどう変わっていくと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Shizen to no kakawarikata wa, korekara gojūnen de dō kawatte iku to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000101",
+    "question": "To what extent do you believe linguistic diversity contributes to or hinders global cooperation?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "In hoeverre draagt taaldiversiteit volgens jou bij aan of belemmert het de mondiale samenwerking?",
+      "Japanese": "言語の多様性は国際協力にどの程度貢献している、あるいは妨げていると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Gengo no tayōsei wa kokusai kyōryoku ni dono teido kōken shite iru, arui wa samatagete iru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000102",
+    "question": "How would you critique the argument that economic growth is inherently at odds with environmental sustainability?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Hoe zou je het argument bekritiseren dat economische groei inherent in strijd is met ecologische duurzaamheid?",
+      "Japanese": "経済成長は本質的に環境の持続可能性と相反するという主張を、どのように批判しますか？"
+    },
+    "romanizations": {
+      "Japanese": "Keizai seichō wa honshitsuteki ni kankyō no jizoku kanōsei to aihansuru to iu shuchō o, dono yō ni hihan shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000103",
+    "question": "In what ways might the rise of automation reshape our understanding of human purpose?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Op welke manieren zou de opkomst van automatisering ons begrip van menselijke zingeving kunnen veranderen?",
+      "Japanese": "自動化の進展は、人間の存在意義に対する理解をどのように再構築しうると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Jidōka no shinten wa, ningen no sonzai igi ni taisuru rikai o dono yō ni saikōchiku shi uru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000104",
+    "question": "Do you think culture loses something essential when it becomes purely commercial?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Denk je dat cultuur iets essentieels verliest zodra het puur commercieel wordt?",
+      "Japanese": "文化が完全に商業化されると、何か本質的なものが失われると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Bunka ga kanzen ni shōgyōka sareru to, nani ka honshitsuteki na mono ga ushinawareru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000105",
+    "question": "To what extent can we trust historical narratives when they are inevitably shaped by those in power?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "In hoeverre kunnen we historische verhalen vertrouwen, als ze onvermijdelijk worden gekleurd door degenen die aan de macht zijn?",
+      "Japanese": "歴史の物語が権力者によって形作られることが避けられない以上、それをどこまで信頼できると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Rekishi no monogatari ga kenryokusha ni yotte katachi tsukurareru koto ga sakerarenai ijō, sore o doko made shinrai dekiru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000106",
+    "question": "How would you respond to the assertion that democracy is ill-suited to addressing long-term global challenges?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Hoe zou je reageren op de bewering dat democratie ongeschikt is om langetermijnuitdagingen op wereldschaal aan te pakken?",
+      "Japanese": "民主主義は長期的な地球規模の課題に対処するのに向いていないという主張に、どう反論しますか？"
+    },
+    "romanizations": {
+      "Japanese": "Minshu shugi wa chōkiteki na chikyū kibo no kadai ni taisho suru no ni muite inai to iu shuchō ni, dō hanron shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000107",
+    "question": "In your view, does the pursuit of happiness as a life goal create more satisfaction or more dissatisfaction?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Levert het nastreven van geluk als levensdoel volgens jou meer voldoening op of juist meer ontevredenheid?",
+      "Japanese": "幸福を人生の目標として追い求めることは、満足をもたらすと思いますか、それとも不満を増やすと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Kōfuku o jinsei no mokuhyō toshite oimotomeru koto wa, manzoku o motarasu to omoimasu ka, soretomo fuman o fuyasu to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000108",
+    "question": "How might advances in neuroscience challenge our legal concepts of responsibility and free will?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Hoe zouden ontwikkelingen in de neurowetenschap onze juridische opvattingen over verantwoordelijkheid en vrije wil kunnen uitdagen?",
+      "Japanese": "脳科学の進歩は、責任や自由意志に関する法的概念にどのような疑問を投げかけうると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Nō kagaku no shinpo wa, sekinin ya jiyū ishi ni kansuru hōteki gainen ni dono yōna gimon o nagekake uru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000109",
+    "question": "To what extent should scientific progress be constrained by ethical frameworks that lag behind it?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "In hoeverre zou wetenschappelijke vooruitgang beperkt moeten worden door ethische kaders die erop achterlopen?",
+      "Japanese": "科学の進歩は、それに追いつけていない倫理的枠組みによって、どの程度制約されるべきだと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Kagaku no shinpo wa, sore ni oitsukete inai rinriteki wakugumi ni yotte, dono teido seiyaku sareru beki da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000110",
+    "question": "How would you evaluate the claim that privacy is no longer a meaningful concept in the digital age?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Hoe zou je de stelling beoordelen dat privacy in het digitale tijdperk geen betekenisvol begrip meer is?",
+      "Japanese": "デジタル時代においてプライバシーはもはや意味のある概念ではない、という主張をどう評価しますか？"
+    },
+    "romanizations": {
+      "Japanese": "Dejitaru jidai ni oite puraibashī wa mohaya imi no aru gainen de wa nai, to iu shuchō o dō hyōka shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000111",
+    "question": "In what ways does the globalization of entertainment both enrich and impoverish local cultures?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Op welke manieren verrijkt en verarmt de globalisering van entertainment lokale culturen tegelijkertijd?",
+      "Japanese": "エンターテインメントのグローバル化は、地域の文化をどのように豊かにし、同時に損なっていると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Entāteinmento no gurōbaru-ka wa, chiiki no bunka o dono yō ni yutaka ni shi, dōji ni sokonatte iru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000112",
+    "question": "How do you weigh the competing values of individual autonomy and collective responsibility in public health policy?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Hoe weeg je de tegenstrijdige waarden van individuele autonomie en collectieve verantwoordelijkheid in het volksgezondheidsbeleid tegen elkaar af?",
+      "Japanese": "公衆衛生政策において、個人の自律性と集団的責任という相反する価値をどのように比較考量しますか？"
+    },
+    "romanizations": {
+      "Japanese": "Kōshū eisei seisaku ni oite, kojin no jiritsusei to shūdanteki sekinin to iu aihansuru kachi o dono yō ni hikaku kōryō shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000113",
+    "question": "Can a society move forward if it keeps rewriting its own history?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Kan een samenleving vooruitkomen als ze haar eigen geschiedenis blijft herschrijven?",
+      "Japanese": "自国の歴史を書き換え続ける社会は、前進することができると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Jikoku no rekishi o kakikae tsuzukeru shakai wa, zenshin suru koto ga dekiru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000114",
+    "question": "How would you assess the role of failure in personal growth compared to structured success?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Hoe zou je de rol van mislukking in persoonlijke groei beoordelen ten opzichte van bewust nagestreefde succes?",
+      "Japanese": "個人の成長において、失敗の役割を整えられた成功と比べてどのように評価しますか？"
+    },
+    "romanizations": {
+      "Japanese": "Kojin no seichō ni oite, shippai no yakuwari o totonoerareta seikō to kurabete dono yō ni hyōka shimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000115",
+    "question": "In what ways might our conception of intelligence need to expand in light of artificial systems?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Op welke manieren zou ons begrip van intelligentie moeten worden verruimd in het licht van kunstmatige systemen?",
+      "Japanese": "人工システムの登場を踏まえて、知性という概念はどのように拡張されるべきだと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Jinkō shisutemu no tōjō o fumaete, chisei to iu gainen wa dono yō ni kakuchō sareru beki da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000116",
+    "question": "Who gets to decide what counts as art, and does that even matter?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Wie bepaalt wat kunst is, en maakt dat eigenlijk iets uit?",
+      "Japanese": "何を芸術と見なすかを決めるのは誰であり、そしてそれは本当に重要なことだと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Nani o geijutsu to minasu ka o kimeru no wa dare de ari, soshite sore wa hontō ni jūyōna koto da to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000117",
+    "question": "To what extent is meritocracy a useful ideal, and where does it break down in practice?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "In hoeverre is meritocratie een nuttig ideaal, en waar schiet het in de praktijk tekort?",
+      "Japanese": "能力主義はどの程度まで有用な理想であり、実際にはどこで破綻すると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Nōryoku shugi wa dono teido made yūyōna risō de ari, jissai ni wa doko de hatan suru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000118",
+    "question": "How might the language we use to describe mental health shape our experience of it?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Hoe beïnvloedt de taal waarmee we over mentale gezondheid praten onze eigen beleving ervan?",
+      "Japanese": "メンタルヘルスを語る際に使う言葉は、その経験そのものをどのように形づくりうると思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Mentaru herusu o kataru sai ni tsukau kotoba wa, sono keiken sono mono o dono yō ni katachi tsukuri uru to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000119",
+    "question": "Do you think social media has made it harder or easier to know who you really are?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Denk je dat sociale media het moeilijker of makkelijker maakt om te weten wie je echt bent?",
+      "Japanese": "ソーシャルメディアは、自分が本当は何者であるかを知ることを難しくしたと思いますか、それとも簡単にしたと思いますか？"
+    },
+    "romanizations": {
+      "Japanese": "Sōsharu media wa, jibun ga hontō wa nanimono de aru ka o shiru koto o muzukashiku shita to omoimasu ka, soretomo kantan ni shita to omoimasu ka?"
+    }
+  },
+  {
+    "id": "c1000000-0000-0000-0000-000000000120",
+    "question": "How would you critique the assumption that technological progress and human flourishing are inherently aligned?",
+    "proficiency_level": "C2",
+    "translations": {
+      "Dutch": "Hoe zou je de aanname bekritiseren dat technologische vooruitgang en menselijke bloei vanzelfsprekend samengaan?",
+      "Japanese": "技術の進歩と人間の幸福は必然的に一致するという前提を、どのように批判しますか？"
+    },
+    "romanizations": {
+      "Japanese": "Gijutsu no shinpo to ningen no kōfuku wa hitsuzenteki ni icchi suru to iu zentei o, dono yō ni hihan shimasu ka?"
+    }
+  }
+]
