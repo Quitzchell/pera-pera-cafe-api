@@ -1,0 +1,20 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: pera-app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://pera:${PERA_DB_PASSWORD:?required}@postgres:5432/pera_pera_cafe?schema=public
+      NODE_ENV: production
+    networks:
+      - web
+      - postgres-net
+
+networks:
+  web:
+    external: true
+  postgres-net:
+    external: true
+

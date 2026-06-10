@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./dev.Dockerfile
+      dockerfile: ./Dockerfile.dev
     container_name: pera-pera-cafe-nest
     ports:
       - '3000:3000'
