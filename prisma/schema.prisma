@@ -18,28 +18,61 @@ enum SessionStatus {
 }
 
 model Session {
-  id              String        @id @default(cuid())
-  title           String
-  source_language String
-  target_language String
-  join_code       String        @unique
-  status          SessionStatus @default(pending)
-  created_at      DateTime      @default(now())
-  ended_at        DateTime?
-  participants    Participant[]
+  id           String         @id @default(cuid())
+  title        String
+  languages    String[]
+  join_code    String         @unique
+  status       SessionStatus  @default(pending)
+  created_at   DateTime       @default(now())
+  ended_at     DateTime?
+  participants Participant[]
+  events       SessionEvent[]
 }
 
 model Participant {
-  id                 String    @id @default(cuid())
+  id                 String         @id @default(cuid())
   session_id         String
-  session            Session   @relation(fields: [session_id], references: [id], onDelete: Cascade)
+  session            Session        @relation(fields: [session_id], references: [id], onDelete: Cascade)
   name               String
   native_language    String
-  target_language    String
   proficiency_levels String[]
-  is_host            Boolean   @default(false)
-  joined_at          DateTime  @default(now())
+  is_host            Boolean        @default(false)
+  joined_at          DateTime       @default(now())
   left_at            DateTime?
+  events_triggered   SessionEvent[]
 
   @@index([session_id])
+}
+
+model Card {
+  id                String            @id
+  question          String
+  proficiency_level String
+  created_at        DateTime          @default(now())
+  translations      CardTranslation[]
+}
+
+model CardTranslation {
+  id           String  @id @default(cuid())
+  card_id      String
+  card         Card    @relation(fields: [card_id], references: [id], onDelete: Cascade)
+  language     String
+  translation  String
+  romanization String?
+
+  @@unique([card_id, language])
+  @@index([card_id])
+}
+
+model SessionEvent {
+  id         String       @id @default(cuid())
+  session_id String
+  session    Session      @relation(fields: [session_id], references: [id], onDelete: Cascade)
+  type       String
+  payload    Json         @default("{}")
+  actor_id   String?
+  actor      Participant? @relation(fields: [actor_id], references: [id], onDelete: SetNull)
+  created_at DateTime     @default(now())
+
+  @@index([session_id, created_at])
 }
