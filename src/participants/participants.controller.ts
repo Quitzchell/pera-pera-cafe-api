@@ -1,34 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ParticipantsService } from './participants.service';
-import { CreateParticipantDto } from './dto/create-participant.dto';
-import { UpdateParticipantDto } from './dto/update-participant.dto';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import { ParticipantsService } from './participants.service'
+import { JoinSessionDto } from './dto/join-session.dto'
 
-@Controller('participants')
+@Controller('sessions/:sessionId/participants')
 export class ParticipantsController {
   constructor(private readonly participantsService: ParticipantsService) {}
 
   @Post()
-  create(@Body() createParticipantDto: CreateParticipantDto) {
-    return this.participantsService.create(createParticipantDto);
+  join(@Param('sessionId') sessionId: string, @Body() dto: JoinSessionDto) {
+    return this.participantsService.join(sessionId, dto)
   }
 
-  @Get()
-  findAll() {
-    return this.participantsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.participantsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateParticipantDto: UpdateParticipantDto) {
-    return this.participantsService.update(+id, updateParticipantDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.participantsService.remove(+id);
+  @Get(':participantId')
+  findOne(@Param('sessionId') sessionId: string, @Param('participantId') participantId: string) {
+    return this.participantsService.findOne(sessionId, participantId)
   }
 }
