@@ -1,14 +1,18 @@
-import {Body, Controller, Post} from '@nestjs/common';
-import {CreateSessionDto} from './dto/create-session.dto';
-import {SessionsService} from './sessions.service';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import { SessionsService } from './sessions.service'
+import { CreateSessionDto } from './dto/create-session.dto'
 
 @Controller('sessions')
 export class SessionsController {
-    constructor(private readonly sessionsService: SessionsService) {
-    }
+  constructor(private readonly sessionService: SessionsService) {}
 
-    @Post()
-    create(@Body() createSessionDto: CreateSessionDto) {
-        return this.sessionsService.create(createSessionDto);
-    }
+  @Post()
+  create(@Body() body: CreateSessionDto) {
+    return this.sessionService.create(body)
+  }
+
+  @Get(':sessionId')
+  findOne(@Param('sessionId') sessionId: string) {
+    return this.sessionService.findOne(sessionId)
+  }
 }
