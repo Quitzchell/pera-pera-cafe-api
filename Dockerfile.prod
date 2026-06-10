@@ -33,6 +33,7 @@ COPY --from=builder --chown=nest:nest /app/node_modules ./node_modules
 COPY --from=builder --chown=nest:nest /app/dist ./dist
 COPY --from=builder --chown=nest:nest /app/generated ./generated
 COPY --from=builder --chown=nest:nest /app/prisma ./prisma
+COPY --from=builder --chown=nest:nest /app/prisma.config.ts ./
 
 EXPOSE 3000
 CMD ["node", "dist/main.js"]
