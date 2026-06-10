@@ -44,7 +44,7 @@ export class GameplayService {
 
         const payload = latest.payload as Prisma.JsonObject
         const cardId = payload.card_id as string
-        const targetId = payload.target_id as string
+        const targetId = payload.target_participant_id as string
         const practiceLanguage = payload.practice_language as string
 
         const card = await this.prisma.card.findUniqueOrThrow({
