@@ -10,12 +10,6 @@ type DrawCardResult = {
     practiceLanguage: string,
 }
 
-type CurrentCardState = {
-    cardId: string
-    targetParticipantId: string,
-    practiceLanguage: string,
-} | null
-
 @Injectable()
 export class GameplayService {
     constructor(private readonly prisma: PrismaService) {
@@ -38,7 +32,7 @@ export class GameplayService {
         return host.id
     }
 
-    async getCurrentCard(sessionId: string): Promise<CurrentCardState> {
+    async getCurrentCard(sessionId: string): Promise<DrawCardResult | null> {
         const latest = await this.prisma.sessionEvent.findFirst({
             where: {
                 session_id: sessionId,
@@ -49,11 +43,16 @@ export class GameplayService {
         if (!latest || latest.type !== 'card_drawn') return null
 
         const payload = latest.payload as Prisma.JsonObject
-        return {
-            cardId: payload.card_id as string,
-            targetParticipantId: payload.target_participant_id as string,
-            practiceLanguage: payload.practice_language as string,
-        }
+        const cardId = payload.card_id as string
+        const targetId = payload.target_id as string
+        const practiceLanguage = payload.practice_language as string
+
+        const card = await this.prisma.card.findUniqueOrThrow({
+            where: {id: cardId},
+            include: {translations: true}
+        })
+
+        return this.toDrawResult(card, targetId, practiceLanguage)
     }
 
     // ────── Actions ──────
