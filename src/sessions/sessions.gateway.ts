@@ -21,7 +21,7 @@ type HandshakeAuth = {
 type ParticipantWithSession = Prisma.ParticipantGetPayload<{ include: { session: true } }>
 
 @WebSocketGateway({
-    cors: {origin: '*'},
+    cors: {origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173'},
     path: '/api/socket.io/',
 })
 export class SessionsGateway implements OnGatewayConnection, OnGatewayDisconnect {
