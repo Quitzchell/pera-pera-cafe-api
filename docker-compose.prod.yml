@@ -6,7 +6,7 @@ services:
     container_name: pera-app
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://pera:${PERA_DB_PASSWORD:?required}@postgres:5432/pera_pera_cafe?schema=public
+      DATABASE_URL: postgresql://${PERA_DB_USER:?required}:${PERA_DB_PASSWORD:?required}@postgres:5432/${PERA_DB_NAME:?required}?schema=public
       NODE_ENV: production
       CORS_ORIGIN: ${CORS_ORIGIN:?required}
     networks:
