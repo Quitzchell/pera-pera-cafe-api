@@ -1,98 +1,57 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Pera Pera Cafe
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A realtime web app for practicing Japanese (and other languages) with friends through interactive, turn-based language games.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Learning a language alone stalls; learning with a partner is fun but hard to structure. Pera Pera Cafe gives a small group a shared room where one person is the "dealer", drawing prompt cards matched to another player's proficiency level and target language. Turns rotate, cards never repeat, and every player sees the same state update instantly. This repository is the backend: the API and realtime engine that drives those sessions.
 
-## Description
+## What it does
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Host a session** — pick a target language and your native language; the app pairs them and mints a short join code.
+- **Join by code** — other players join the room with their own native language and proficiency levels.
+- **Play in realtime** — the host starts the game, the current dealer draws a card for a chosen player in that player's practice language, can skip an unsuitable card, then passes the turn. Every event is broadcast live to the room.
 
-## Project setup
+## Tech stack and why
 
-```bash
-$ npm install
-```
+- **NestJS 11** — modular DI keeps the HTTP surface (session setup, joining) cleanly separated from the realtime gameplay engine.
+- **Socket.IO gateway** (`@nestjs/websockets`) — gameplay is inherently push-based (a card drawn by one player must appear for everyone), so WebSockets are the transport, not polling.
+- **Prisma 7 + PostgreSQL** — relational data (sessions, participants, cards, translations) with a typed client. Gameplay is **event-sourced**: an append-only `SessionEvent` log is the single source of truth for who the current dealer is and which card is in play, so any client that (re)connects can reconstruct exact game state.
+- **class-validator + global `ValidationPipe`** — DTOs are whitelisted and non-whitelisted fields are rejected at the edge.
+- **Docker** for both dev (hot-reload) and prod (multi-stage, non-root, pruned) so the runtime matches locally and on the server.
 
-## Compile and run the project
+## Architecture
 
-```bash
-# development
-$ npm run start
+Three modules under `src/`:
 
-# watch mode
-$ npm run start:dev
+- **`prisma`** — a thin `PrismaService` wrapping the generated client, shared across the app.
+- **`sessions`** — the core. A REST `SessionsController` handles session creation/lookup; the `SessionsGateway` owns the WebSocket lifecycle; `SessionsService` manages session state transitions (start/end, host-only); `GameplayService` implements the card/turn rules.
+- **`participants`** — REST endpoints for joining a session and fetching a participant.
 
-# production mode
-$ npm run start:prod
-```
+**Authorization** is enforced at two layers rather than with a single blanket guard. The gateway authenticates every socket at handshake time (a valid `participantId` + `sessionId` pair, or the connection is dropped) and stamps identity onto `socket.data`. Business rules are then enforced as service-level assertions: `assertActive` (session must be running), `assertDealer` (only the current dealer may draw/skip/pass), and host-only checks for starting and ending a session. Each rule lives with the operation it protects and stays testable without a socket.
 
-## Run tests
+**Gateway events:** `session:start` / `session:end`, `card:draw`, `card:skip`, `turn:pass` inbound; `presence:list`, `participant:joined` / `participant:left`, `session:status`, `game:state`, `card:drawn`, `turn:passed` outbound. On connect, a client receives current presence plus live game state, so a mid-game refresh recovers seamlessly.
+
+## Testing
+
+E2E tests (`test/`, Supertest) exercise the real HTTP stack — routing, the global `api` prefix, and the `ValidationPipe` — by booting the actual `AppModule` and overriding only `PrismaService` with a mock. This verifies the true request surface (validation errors, business-rule 400s) without needing a database in CI.
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run test:e2e
 ```
 
-## Deployment
+## CI/CD
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+A GitHub Actions workflow (`.github/workflows/deploy.yml`) deploys on push to `master`. It SSHes into the VPS, pulls the latest code, and rebuilds/restarts the production stack via `docker compose -f docker-compose.prod.yml`. A `concurrency` group serializes deploys so overlapping pushes cannot race.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Running locally
+
+Requires Docker and a PostgreSQL instance reachable on the shared `postgres-17_default` network (see `docker-compose.yml`).
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+cp .env.prod.example .env      # then set DATABASE_URL / CORS_ORIGIN
+make up                        # build + start with hot reload on :3000
+npx prisma migrate dev         # apply the schema
+make logs                      # tail app logs
+make down                      # stop
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+The API is served under the `/api` prefix; the Socket.IO endpoint is at `/api/socket.io/`.
