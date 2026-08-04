@@ -36,4 +36,10 @@ COPY --from=builder --chown=nest:nest /app/prisma ./prisma
 COPY --from=builder --chown=nest:nest /app/prisma.config.ts ./
 
 EXPOSE 3000
+
+# 127.0.0.1 rather than localhost, so the probe can't land on ::1 and fail while
+# the server is serving fine. /api/health, not /health: setGlobalPrefix('api').
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://127.0.0.1:3000/api/health || exit 1
+
 CMD ["node", "dist/src/main.js"]
