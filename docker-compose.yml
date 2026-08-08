@@ -8,6 +8,8 @@ services:
       - '3000:3000'
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/pera_pera_cafe?schema=public
     volumes:
       - .:/app
       - ./node_modules:/app/node_modules
