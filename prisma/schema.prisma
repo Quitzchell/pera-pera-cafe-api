@@ -67,3 +67,52 @@ model AuthSession {
 
   @@index([userId])
 }
+
+enum VerbClass {
+  GODAN
+  ICHIDAN
+  IRREGULAR
+}
+
+enum JlptLevel {
+  N5
+  N4
+  N3
+}
+
+enum ConjugationForm {
+  POLITE
+  POLITE_NEGATIVE
+  POLITE_PAST
+  NEGATIVE
+  PAST_NEGATIVE
+  TE
+  PAST
+  POTENTIAL
+  PASSIVE
+  CAUSATIVE
+  CAUSATIVE_PASSIVE
+  VOLITIONAL
+  CONDITIONAL_BA
+  IMPERATIVE
+  PROHIBITIVE
+}
+
+model Verb {
+  id             String            @id @default(cuid())
+  dictionaryForm String
+  reading        String
+  meaning        String
+  verbClass      VerbClass
+  jlptLevel      JlptLevel
+  isActive       Boolean           @default(true)
+  // Forms the rules produce but nobody uses, e.g. 分かる has no potential.
+  excludedForms  ConjugationForm[] @default([])
+  // Set on compounds such as 勉強する: the base verb is conjugated, the rest is the prefix.
+  baseVerbId     String?
+  baseVerb       Verb?             @relation("Compound", fields: [baseVerbId], references: [id], onDelete: Restrict)
+  compounds      Verb[]            @relation("Compound")
+  createdAt      DateTime          @default(now())
+
+  @@unique([dictionaryForm, reading])
+}

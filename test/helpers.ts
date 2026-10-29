@@ -17,7 +17,7 @@ export async function createApp() {
   configureApp(app)
   await app.init()
   const prisma = app.get(PrismaService)
-  await prisma.$executeRawUnsafe('TRUNCATE "User" CASCADE')
+  await prisma.$executeRawUnsafe('TRUNCATE "User", "Verb" CASCADE')
   return { app, prisma, http: () => request(app.getHttpServer()) }
 }
 
