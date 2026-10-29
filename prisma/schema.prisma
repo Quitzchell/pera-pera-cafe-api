@@ -29,18 +29,22 @@ enum AuthTokenType {
 }
 
 model User {
-  id               String        @id @default(cuid())
-  email            String        @unique
+  id               String         @id @default(cuid())
+  email            String         @unique
   displayName      String
   passwordHash     String?
-  role             Role          @default(LEARNER)
-  status           UserStatus    @default(INVITED)
-  failedLoginCount Int           @default(0)
+  role             Role           @default(LEARNER)
+  status           UserStatus     @default(INVITED)
+  failedLoginCount Int            @default(0)
   lockedUntil      DateTime?
-  createdAt        DateTime      @default(now())
+  createdAt        DateTime       @default(now())
   lastActiveAt     DateTime?
   tokens           AuthToken[]
   sessions         AuthSession[]
+  settings         UserSettings?
+  rounds           DrillRound[]
+  attempts         Attempt[]
+  ruleProgress     RuleProgress[]
 }
 
 model AuthToken {
@@ -96,6 +100,7 @@ enum ConjugationForm {
   CONDITIONAL_BA
   IMPERATIVE
   PROHIBITIVE
+  POTENTIAL_CONDITIONAL
 }
 
 model Verb {
@@ -112,7 +117,97 @@ model Verb {
   baseVerbId     String?
   baseVerb       Verb?             @relation("Compound", fields: [baseVerbId], references: [id], onDelete: Restrict)
   compounds      Verb[]            @relation("Compound")
+  drillItems     DrillItem[]
+  attempts       Attempt[]
   createdAt      DateTime          @default(now())
 
   @@unique([dictionaryForm, reading])
+}
+
+enum RuleGroup {
+  GODAN_U_TSU_RU
+  GODAN_MU_BU_NU
+  GODAN_KU
+  GODAN_GU
+  GODAN_SU
+  ICHIDAN
+  IRREGULAR_SURU
+  IRREGULAR_KURU
+  EXCEPTION_IKU
+  EXCEPTION_ARU
+}
+
+enum DrillMode {
+  STANDARD
+  CONTRAST
+  EXAM
+}
+
+model UserSettings {
+  userId       String            @id
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabledForms ConjugationForm[]
+  jlptLevels   JlptLevel[]
+  roundSize    Int               @default(20)
+  romajiInput  Boolean           @default(false)
+  showFurigana Boolean           @default(true)
+}
+
+model DrillRound {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mode       DrillMode
+  startedAt  DateTime    @default(now())
+  finishedAt DateTime?
+  items      DrillItem[]
+
+  @@index([userId, finishedAt])
+}
+
+model DrillItem {
+  id       String          @id @default(cuid())
+  roundId  String
+  round    DrillRound      @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  verbId   String
+  verb     Verb            @relation(fields: [verbId], references: [id], onDelete: Restrict)
+  form     ConjugationForm
+  position Int
+  // Multiple-choice options, EXAM mode only.
+  choices  String[]        @default([])
+  attempt  Attempt?
+
+  @@unique([roundId, position])
+}
+
+// Append-only: RuleProgress is a projection of this log.
+model Attempt {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  drillItemId String          @unique
+  drillItem   DrillItem       @relation(fields: [drillItemId], references: [id], onDelete: Cascade)
+  verbId      String
+  verb        Verb            @relation(fields: [verbId], references: [id], onDelete: Restrict)
+  form        ConjugationForm
+  ruleGroup   RuleGroup
+  answer      String
+  isCorrect   Boolean
+  createdAt   DateTime        @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model RuleProgress {
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  form            ConjugationForm
+  ruleGroup       RuleGroup
+  box             Int
+  dueAt           DateTime
+  attemptCount    Int
+  correctCount    Int
+  lastPracticedAt DateTime
+
+  @@id([userId, form, ruleGroup])
 }
