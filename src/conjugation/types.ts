@@ -1,5 +1,4 @@
-// Plain string unions with value objects, shaped like Prisma's generated enums so the
-// database enums (same names and values) are assignable without importing Prisma here.
+// Same shape as Prisma's generated enums, so those are assignable without importing Prisma.
 
 export const VerbClass = {
   GODAN: 'GODAN',
@@ -49,7 +48,6 @@ export interface Verb {
   verbClass: VerbClass
 }
 
-// 勉強 + する, 持って + 来る: the base verb is conjugated and the prefix put in front.
 export interface CompoundVerb {
   prefix: Written
   base: Verb
@@ -65,7 +63,6 @@ export interface Written {
 export interface Conjugation extends Written {
   ruleGroup: RuleGroup
   ruleHint: string
-  // Other forms that are also correct, e.g. the short godan causative-passive 書かされる.
   alternatives: Written[]
 }
 
