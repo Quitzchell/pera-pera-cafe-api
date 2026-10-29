@@ -8,18 +8,13 @@ import {
   Written,
 } from './types'
 
-// The conjugated base verb, before any compound prefix is put in front.
 export interface Inflection extends Written {
   ruleGroup: RuleGroup
-  // The ending that changes, for the rule hint: ぐ → いで.
   change: { from: string; to: string }
   alternatives: Written[]
-  // Set when the form breaks the regular rule: what the regular rule would have given.
   regularKanji?: string
 }
 
-// One verb kind with its own rules. New kinds (e.g. honorific くださる) are a new entry in
-// CONJUGATORS, placed before the general class they are an exception to.
 export interface Conjugator {
   matches(verb: Verb): boolean
   supportedForms: readonly ConjugationForm[]
@@ -130,7 +125,7 @@ function inflectGodan(verb: Verb, form: ConjugationForm): Inflection {
     throw new ConjugationError(`${verb.dictionaryForm} does not end in a godan ending`)
   }
   const suffix = GODAN_SUFFIXES[form](row)
-  // The short causative-passive (書かされる) contracts せら → さ, which す-verbs cannot do.
+  // す-verbs have no short form (話さされる).
   const alternatives =
     form === ConjugationForm.CAUSATIVE_PASSIVE && row.u !== 'す'
       ? [
@@ -156,7 +151,6 @@ const godan: Conjugator = {
   inflect: inflectGodan,
 }
 
-// 行く: て/た-forms are 行って/行った instead of 行いて/行いた. Other forms are regular godan.
 const iku: Conjugator = {
   matches: (verb) => verb.verbClass === VerbClass.GODAN && verb.reading === 'いく',
   supportedForms: ALL_FORMS,
@@ -177,8 +171,7 @@ const iku: Conjugator = {
   },
 }
 
-// ある: the negatives are ない/なかった instead of あらない. Potential, passive, causative,
-// volitional and the commands are not used, so they are not drilled.
+// ある's potential, passive, causative, volitional and commands are not used, so not drilled.
 const aru: Conjugator = {
   matches: (verb) => verb.verbClass === VerbClass.GODAN && verb.reading === 'ある',
   supportedForms: [
@@ -246,7 +239,6 @@ const kuru: Conjugator = {
   supportedForms: ALL_FORMS,
   inflect(verb, form) {
     const kana = KURU_FORMS[form]
-    // The kana of the stem changes per form (こない, きて, くれば); the kanji 来 does not.
     const kanji = verb.dictionaryForm === '来る' ? `来${kana.slice(1)}` : kana
     return {
       kanji,
@@ -258,7 +250,7 @@ const kuru: Conjugator = {
   },
 }
 
-// Exceptions first: the first conjugator that matches wins.
+// First match wins, so exceptions go before their general class.
 const CONJUGATORS: readonly Conjugator[] = [iku, aru, suru, kuru, ichidan, godan]
 
 export function conjugatorFor(verb: Verb): Conjugator {
