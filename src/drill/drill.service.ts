@@ -97,17 +97,7 @@ export class DrillService {
   }
 
   async answer(userId: string, roundId: string, itemId: string, answer: string) {
-    const round = await this.findOwnRound(userId, roundId)
-    if (round.finishedAt) {
-      throw new ConflictException('This round is finished')
-    }
-    const item = await this.prisma.drillItem.findFirst({
-      where: { id: itemId, roundId },
-      include: { verb: { include: { baseVerb: true } }, attempt: { select: { id: true } } },
-    })
-    if (!item) {
-      throw new NotFoundException('Item not found')
-    }
+    const item = await this.findOpenItem(userId, roundId, itemId)
     if (item.attempt) {
       throw new ConflictException('This item is already answered')
     }
@@ -144,6 +134,16 @@ export class DrillService {
       })
       .catch(onDuplicate('This item is already answered'))
     return result
+  }
+
+  // Practice after a miss: graded like the first answer, but only the first answer counts, so
+  // nothing is stored.
+  async retry(userId: string, roundId: string, itemId: string, answer: string) {
+    const item = await this.findOpenItem(userId, roundId, itemId)
+    if (!item.attempt || item.attempt.isCorrect) {
+      throw new ConflictException('Only a missed item can be retried')
+    }
+    return this.check(answer, item.verb, item.form)
   }
 
   async finish(userId: string, roundId: string) {
@@ -215,6 +215,21 @@ export class DrillService {
       }
       throw error
     }
+  }
+
+  private async findOpenItem(userId: string, roundId: string, itemId: string) {
+    const round = await this.findOwnRound(userId, roundId)
+    if (round.finishedAt) {
+      throw new ConflictException('This round is finished')
+    }
+    const item = await this.prisma.drillItem.findFirst({
+      where: { id: itemId, roundId },
+      include: { verb: { include: { baseVerb: true } }, attempt: { select: { isCorrect: true } } },
+    })
+    if (!item) {
+      throw new NotFoundException('Item not found')
+    }
+    return item
   }
 
   private async findOwnRound(userId: string, roundId: string) {

@@ -25,6 +25,17 @@ export class DrillController {
     return this.drill.answer(session.user.id, roundId, itemId, dto.answer)
   }
 
+  @Post(':roundId/items/:itemId/retry')
+  @HttpCode(200)
+  retry(
+    @CurrentSession() session: SignedIn,
+    @Param('roundId') roundId: string,
+    @Param('itemId') itemId: string,
+    @Body() dto: AnswerDto,
+  ) {
+    return this.drill.retry(session.user.id, roundId, itemId, dto.answer)
+  }
+
   @Post(':roundId/finish')
   @HttpCode(200)
   finish(@CurrentSession() session: SignedIn, @Param('roundId') roundId: string) {

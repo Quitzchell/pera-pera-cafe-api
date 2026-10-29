@@ -173,6 +173,55 @@ describe('Drill (e2e)', () => {
     await startRound('CONTRAST').expect(400)
   })
 
+  it('lets a learner retry a missed item as practice only', async () => {
+    await settings({ roundSize: 5 })
+    const { body: round } = await startRound('STANDARD').expect(201)
+    const [missed, other] = round.items as RoundItem[]
+    const retry = (headers: Record<string, string>, itemId: string, value: string) =>
+      t
+        .http()
+        .post(`/api/drill/rounds/${round.id}/items/${itemId}/retry`)
+        .set(headers)
+        .send({ answer: value })
+
+    await retry(learner, missed.id, 'x')
+      .expect(409)
+      .expect((res) => expect(res.body.message).toBe('Only a missed item can be retried'))
+    await answer(learner, round.id, missed.id, 'wrong').expect(200)
+    const right = await expectedAnswer(t.prisma, missed.id)
+
+    await retry(learner, missed.id, 'still wrong')
+      .expect(200)
+      .expect((res) => expect(res.body.isCorrect).toBe(false))
+    const { body } = await retry(learner, missed.id, `${right.kanji}。`).expect(200)
+    expect(body).toEqual({
+      isCorrect: true,
+      expected: { kanji: right.kanji, kana: right.kana },
+      ruleGroup: right.ruleGroup,
+      ruleHint: right.ruleHint,
+    })
+
+    await answer(learner, round.id, other.id, (await expectedAnswer(t.prisma, other.id)).kana)
+    await retry(learner, other.id, 'x').expect(409)
+    await createUser(t, { email: 'other@example.com' })
+    await retry(await signIn(t, 'other'), missed.id, right.kana).expect(404)
+
+    expect(await t.prisma.attempt.count()).toBe(2)
+    const progress = await t.prisma.ruleProgress.findMany()
+    expect(progress.reduce((sum, row) => sum + row.attemptCount, 0)).toBe(2)
+
+    const { body: summary } = await t
+      .http()
+      .post(`/api/drill/rounds/${round.id}/finish`)
+      .set(learner)
+      .expect(200)
+    expect(summary).toMatchObject({ answered: 2, correct: 1 })
+    expect(summary.mistakes).toEqual([expect.objectContaining({ itemId: missed.id })])
+    await retry(learner, missed.id, right.kana)
+      .expect(409)
+      .expect((res) => expect(res.body.message).toBe('This round is finished'))
+  })
+
   it('keeps progress consistent when answers arrive at the same time', async () => {
     await settings({ roundSize: VERBS.length, enabledForms: ['TE'] })
     const { body: round } = await startRound('STANDARD').expect(201)
@@ -211,6 +260,12 @@ describe('Drill (e2e)', () => {
       data: { verbClass: 'ICHIDAN' },
     })
 
+    await t
+      .http()
+      .post(`/api/drill/rounds/${round.id}/items/${itemFor('書く').id}/retry`)
+      .set(learner)
+      .send({ answer: 'かいて' })
+      .expect(409)
     await answer(learner, round.id, itemFor('泳ぐ').id, 'およいで')
       .expect(409)
       .expect((res) =>
