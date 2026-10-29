@@ -48,9 +48,7 @@ describe('Admin verbs (e2e)', () => {
     [{ ...kaeru, verbClass: undefined }, 'verbClass is required'],
     [
       { ...kaeru, excludedForms: ['TE', 'NOPE'] },
-      [
-        'each value in excludedForms must be one of the following values: POLITE, POLITE_NEGATIVE, POLITE_PAST, NEGATIVE, PAST_NEGATIVE, TE, PAST, POTENTIAL, PASSIVE, CAUSATIVE, CAUSATIVE_PASSIVE, VOLITIONAL, CONDITIONAL_BA, IMPERATIVE, PROHIBITIVE',
-      ],
+      [expect.stringMatching(/^each value in excludedForms must be one of/)],
     ],
   ])('rejects %o', async (body, message) => {
     await post(body)

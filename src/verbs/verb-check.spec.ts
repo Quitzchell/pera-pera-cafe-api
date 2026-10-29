@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { SeedVerb } from '../cli/seed-verbs'
 import { ConjugationError, ConjugationForm, conjugate, RuleGroup, VerbClass } from '../conjugation'
+import { examChoices } from '../drill/exam-choices'
 import { checkVerb, drillableForms, StoredVerb, toConjugatable } from './verb-check'
 
 const { GODAN, ICHIDAN, IRREGULAR } = VerbClass
@@ -142,6 +143,15 @@ describe('seed data', () => {
   it('excludes potential + ば wherever the potential is excluded', () => {
     for (const v of seed.filter((v) => v.excludedForms?.includes('POTENTIAL'))) {
       expect(v.excludedForms).toContain('POTENTIAL_CONDITIONAL')
+    }
+  })
+
+  it('gives every seed verb 4 distinct exam choices in every drillable form', () => {
+    for (const v of seed) {
+      const verb = toConjugatable(stored(v), baseOf(v))
+      for (const form of drillableForms(stored(v), baseOf(v))) {
+        expect(new Set(examChoices(verb, form)).size).toBe(4)
+      }
     }
   })
 
