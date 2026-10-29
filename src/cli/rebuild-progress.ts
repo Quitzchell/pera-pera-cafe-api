@@ -1,7 +1,6 @@
-import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient } from '../../generated/prisma/client'
 import { normalizeUsername } from '../auth/credentials'
 import { rebuildRuleProgress } from '../drill/rule-progress'
+import { PrismaService } from '../prisma/prisma.service'
 
 async function main() {
   const target = process.argv[2]
@@ -9,9 +8,7 @@ async function main() {
     throw new Error('Usage: npm run rebuild-progress -- <username | --all>')
   }
 
-  const prisma = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
-  })
+  const prisma = new PrismaService()
   try {
     const users = await prisma.user.findMany({
       where: target === '--all' ? {} : { username: normalizeUsername(target) },

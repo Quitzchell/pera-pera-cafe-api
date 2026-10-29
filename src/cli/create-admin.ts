@@ -1,5 +1,4 @@
-import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient, Role, UserStatus } from '../../generated/prisma/client'
+import { Role, UserStatus } from '../../generated/prisma/client'
 import {
   hashPassword,
   MIN_PASSWORD_LENGTH,
@@ -7,6 +6,7 @@ import {
   normalizeUsername,
   USERNAME_PATTERN,
 } from '../auth/credentials'
+import { PrismaService } from '../prisma/prisma.service'
 
 async function main() {
   const { ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD } = process.env
@@ -21,9 +21,7 @@ async function main() {
     throw new Error(`ADMIN_PASSWORD must be at least ${MIN_PASSWORD_LENGTH} characters`)
   }
 
-  const prisma = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
-  })
+  const prisma = new PrismaService()
   try {
     await prisma.user.create({
       data: {

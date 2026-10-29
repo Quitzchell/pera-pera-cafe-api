@@ -186,6 +186,32 @@ describe('Admin users (e2e)', () => {
     await t.http().get('/api/auth/me').set(session).expect(401)
   })
 
+  it('invalidates unused links when a user is disabled', async () => {
+    const learner = await createUser(t, { email: 'learner@example.com' })
+    const { body } = await t
+      .http()
+      .post(`/api/admin/users/${learner.id}/reset-link`)
+      .set(admin)
+      .expect(201)
+    const patch = (body: object) =>
+      t.http().patch(`/api/admin/users/${learner.id}`).set(admin).send(body)
+
+    await patch({ disabled: true }).expect(200)
+    await patch({ disabled: false }).expect(200)
+    await t
+      .http()
+      .post('/api/auth/reset-password')
+      .send({ token: tokenFrom(body.link), password: NEW_PASSWORD })
+      .expect(400)
+  })
+
+  it('rejects null for fields that cannot be empty', async () => {
+    const learner = await createUser(t, { email: 'learner@example.com' })
+    for (const body of [{ username: null }, { disabled: null }]) {
+      await t.http().patch(`/api/admin/users/${learner.id}`).set(admin).send(body).expect(400)
+    }
+  })
+
   it('lists users without secrets and deletes a user', async () => {
     const learner = await createUser(t, { email: 'learner@example.com' })
 

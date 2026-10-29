@@ -49,9 +49,10 @@ export class UsersService {
 
     return this.prisma
       .$transaction(async (tx) => {
-        // Re-enabling must not bring back sessions from before the account was disabled.
+        // Re-enabling must not bring back sessions or links from before the account was disabled.
         if (status === UserStatus.DISABLED) {
           await tx.authSession.deleteMany({ where: { userId: id } })
+          await tx.authToken.deleteMany({ where: { userId: id, usedAt: null } })
         }
         return tx.user.update({
           where: { id },

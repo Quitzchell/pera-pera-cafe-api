@@ -64,7 +64,7 @@ Every error has the same JSON shape:
 | 429 | Too many attempts (10 a minute per IP on login, accept-invite, reset-password) | "Too many attempts, try again in a minute" |
 | 5xx / network | Server or connection problem | Friendly retry message |
 
-Sign-in failures always answer `401 Invalid username or password`, also for unknown, disabled and locked accounts (after 5 wrong passwords an account is locked for 15 minutes). Do not try to tell these apart.
+Sign-in failures always answer `401 Invalid username or password`, also for unknown and disabled accounts, and during a wait. From the 5th wrong password on, the next attempt is only checked after a wait that grows by a minute per failure, up to 15 minutes; attempts during the wait are refused without counting. Suggest "If you have tried several times, wait a few minutes" after repeated failures. Do not try to tell these apart.
 
 ## 3. Types
 

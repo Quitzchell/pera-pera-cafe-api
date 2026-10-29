@@ -7,8 +7,10 @@ const MINUTE = 60_000
 const DAY = 24 * 60 * MINUTE
 const SESSION_TTL = 30 * DAY
 const TOKEN_TTL: Record<AuthTokenType, number> = { INVITE: 7 * DAY, PASSWORD_RESET: DAY }
-const MAX_FAILED_LOGINS = 5
-const LOCKOUT = 15 * MINUTE
+// From the 5th failed login on, the next attempt is only checked after a wait that grows by a
+// minute per failure, up to 15. A right password after the wait always signs in.
+const FREE_FAILED_LOGINS = 4
+const MAX_LOGIN_WAIT = 15 * MINUTE
 const LAST_ACTIVE_RESOLUTION = 5 * MINUTE
 
 // What a user sees of their own account. The email is for the admin only.
@@ -37,7 +39,7 @@ const invalidLink = () => new BadRequestException('This link is invalid or has e
 
 @Injectable()
 export class AuthService {
-  // Verified against for unknown emails, so they take as long as known ones.
+  // Verified against for unknown usernames, so they take as long as known ones.
   private readonly dummyHash = hashPassword(newToken())
 
   constructor(private readonly prisma: PrismaService) {}
@@ -47,7 +49,7 @@ export class AuthService {
       where: { username: normalizeUsername(username) },
     })
     const passwordOk = await verifyPassword(password, user?.passwordHash ?? (await this.dummyHash))
-    if (!user || user.status !== UserStatus.ACTIVE || this.isLocked(user)) {
+    if (!user || user.status !== UserStatus.ACTIVE || this.mustWait(user)) {
       throw invalidLogin()
     }
     if (!passwordOk) {
@@ -151,7 +153,7 @@ export class AuthService {
     })
   }
 
-  private isLocked(user: { lockedUntil: Date | null }) {
+  private mustWait(user: { lockedUntil: Date | null }) {
     return user.lockedUntil !== null && user.lockedUntil > new Date()
   }
 
@@ -161,10 +163,11 @@ export class AuthService {
       data: { failedLoginCount: { increment: 1 } },
       select: { failedLoginCount: true },
     })
-    if (failedLoginCount >= MAX_FAILED_LOGINS) {
+    if (failedLoginCount > FREE_FAILED_LOGINS) {
+      const wait = Math.min((failedLoginCount - FREE_FAILED_LOGINS) * MINUTE, MAX_LOGIN_WAIT)
       await this.prisma.user.update({
         where: { id: userId },
-        data: { failedLoginCount: 0, lockedUntil: new Date(Date.now() + LOCKOUT) },
+        data: { lockedUntil: new Date(Date.now() + wait) },
       })
     }
   }

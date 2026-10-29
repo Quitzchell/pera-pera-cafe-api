@@ -46,6 +46,7 @@ describe('Admin verbs (e2e)', () => {
     ],
     [{ ...kaeru, reading: 'kaeru' }, 'Reading must be hiragana'],
     [{ ...kaeru, verbClass: undefined }, 'verbClass is required'],
+    [{ ...kaeru, isActive: null }, ['isActive must be a boolean value']],
     [
       { ...kaeru, excludedForms: ['TE', 'NOPE'] },
       [expect.stringMatching(/^each value in excludedForms must be one of/)],
