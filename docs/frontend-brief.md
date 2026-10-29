@@ -232,12 +232,17 @@ Signed in = needs the `session` cookie. CSRF = needs `X-CSRF-Token`.
 |---|---|---|---|
 | `POST /drill/rounds` | signed in, CSRF | `{ mode: DrillMode }` | `201 Round` |
 | `POST /drill/rounds/:roundId/items/:itemId/answer` | signed in, CSRF | `{ answer: string }` (max 100) | `200 AnswerResult` |
+| `POST /drill/rounds/:roundId/items/:itemId/retry` | signed in, CSRF | `{ answer: string }` (max 100) | `200 AnswerResult` |
 | `POST /drill/rounds/:roundId/finish` | signed in, CSRF | – | `200 RoundSummary` |
 
 - A round never contains expected answers. The backend checks each answer.
 - Answers may be kana or kanji; surrounding spaces and a trailing `。` are ignored. For compounds, each part may be kanji or kana (持ってこない, もって来ない). Katakana and romaji are wrong, so convert romaji before sending.
 - In `EXAM` mode send the chosen option as `answer`.
 - Each item can be answered once: a second answer is `409 This item is already answered`.
+- **Retry** is practice after a miss: it grades exactly like `answer` (same spellings, same ra-nuki note) but stores nothing. Only the first answer counts for progress, spaced repetition and the round summary. Retries are unlimited.
+  - `409 Only a missed item can be retried` if the item has no answer yet, or its first answer was correct.
+  - `409 This round is finished` after `finish`.
+  - `404` for another learner's round or an unknown item, like `answer`.
 - If the admin changed the verb so it no longer has the form, answering is `409 This verb was changed during the round; skip this item`. Move on to the next item; it is left out of the summary's mistakes.
 - `finish` may be called with unanswered items; they count in `total`, not in `answered`. Calling it again returns the same summary. Answering after finishing is `409 This round is finished`.
 - Contrast rounds come in pairs: items at positions 0+1, 2+3, … are the same verb in two commonly confused forms (potential/passive, te/past, ba/potential + ba).
