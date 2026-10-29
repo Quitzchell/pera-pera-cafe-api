@@ -23,6 +23,7 @@ export const ConjugationForm = {
   CONDITIONAL_BA: 'CONDITIONAL_BA',
   IMPERATIVE: 'IMPERATIVE',
   PROHIBITIVE: 'PROHIBITIVE',
+  POTENTIAL_CONDITIONAL: 'POTENTIAL_CONDITIONAL',
 } as const
 export type ConjugationForm = (typeof ConjugationForm)[keyof typeof ConjugationForm]
 

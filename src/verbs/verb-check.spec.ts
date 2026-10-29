@@ -95,7 +95,7 @@ describe('checkVerb', () => {
   it('leaves excluded forms out of the drill', () => {
     const wakaru = verb('分かる', 'わかる', GODAN, ['POTENTIAL', 'IMPERATIVE'])
     expect(drillableForms(wakaru)).not.toContain('POTENTIAL')
-    expect(drillableForms(wakaru)).toHaveLength(13)
+    expect(drillableForms(wakaru)).toHaveLength(14)
   })
 })
 
@@ -136,6 +136,12 @@ describe('seed data', () => {
   it('includes the godan verbs that look ichidan', () => {
     for (const form of ['帰る', '入る', '走る', '知る', '切る', '要る']) {
       expect(byForm.get(form)?.verbClass).toBe(GODAN)
+    }
+  })
+
+  it('excludes potential + ば wherever the potential is excluded', () => {
+    for (const v of seed.filter((v) => v.excludedForms?.includes('POTENTIAL'))) {
+      expect(v.excludedForms).toContain('POTENTIAL_CONDITIONAL')
     }
   })
 
