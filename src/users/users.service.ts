@@ -9,6 +9,7 @@ import { AuthService, publicUserSelect } from '../auth/auth.service'
 import { normalizeEmail } from '../auth/credentials'
 import { config } from '../config'
 import { PrismaService } from '../prisma/prisma.service'
+import { ProgressService } from '../progress/progress.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 
@@ -19,6 +20,7 @@ export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly auth: AuthService,
+    private readonly progress: ProgressService,
   ) {}
 
   list() {
@@ -73,6 +75,11 @@ export class UsersService {
     if (count === 0) {
       throw new NotFoundException('User not found')
     }
+  }
+
+  async progressOf(id: string) {
+    await this.findOrFail(id)
+    return this.progress.summary(id)
   }
 
   async resetLink(id: string) {

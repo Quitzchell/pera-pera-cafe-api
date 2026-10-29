@@ -151,6 +151,8 @@ model UserSettings {
   roundSize    Int               @default(20)
   romajiInput  Boolean           @default(false)
   showFurigana Boolean           @default(true)
+  // IANA name such as Europe/Amsterdam; decides which day a finished round counts for.
+  timeZone     String            @default("UTC")
 }
 
 model DrillRound {
