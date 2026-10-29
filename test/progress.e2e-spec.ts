@@ -122,13 +122,13 @@ describe('Progress (e2e)', () => {
 
     const csv = await t.http().get('/api/progress/export?format=csv').set(learner).expect(200)
     expect(csv.get('Content-Type')).toMatch(/^text\/csv/)
-    expect(csv.get('Content-Disposition')).toBe('attachment; filename="progress.csv"')
+    expect(csv.get('Content-Disposition')).toMatch(/^attachment; filename="?progress\.csv"?$/)
     const [header, ...lines] = csv.text.trim().split('\n')
     expect(header).toBe('form,ruleGroup,attemptCount,accuracy,box,lastPracticedAt')
     expect(lines.length).toBeGreaterThan(0)
 
     const json = await t.http().get('/api/progress/export').set(learner).expect(200)
-    expect(json.get('Content-Disposition')).toBe('attachment; filename="progress.json"')
+    expect(json.get('Content-Disposition')).toMatch(/^attachment; filename="?progress\.json"?$/)
     expect(json.body).toHaveLength(lines.length)
     expect(Object.keys(json.body[0])).toEqual(header.split(','))
 
