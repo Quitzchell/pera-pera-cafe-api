@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { AuthTokenType, Prisma, UserStatus } from '../../generated/prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-import { hashPassword, hashToken, newToken, normalizeEmail, verifyPassword } from './credentials'
+import { hashPassword, hashToken, newToken, normalizeUsername, verifyPassword } from './credentials'
 
 const MINUTE = 60_000
 const DAY = 24 * 60 * MINUTE
@@ -11,15 +11,17 @@ const MAX_FAILED_LOGINS = 5
 const LOCKOUT = 15 * MINUTE
 const LAST_ACTIVE_RESOLUTION = 5 * MINUTE
 
+// What a user sees of their own account. The email is for the admin only.
 export const publicUserSelect = {
   id: true,
-  email: true,
-  displayName: true,
+  username: true,
   role: true,
   status: true,
   createdAt: true,
   lastActiveAt: true,
 } satisfies Prisma.UserSelect
+
+export const adminUserSelect = { ...publicUserSelect, email: true } satisfies Prisma.UserSelect
 
 export type PublicUser = Prisma.UserGetPayload<{ select: typeof publicUserSelect }>
 
@@ -30,7 +32,7 @@ export interface SignedIn {
 }
 
 // Same message for every failure, so it does not reveal which accounts exist or are locked.
-const invalidLogin = () => new UnauthorizedException('Invalid email or password')
+const invalidLogin = () => new UnauthorizedException('Invalid username or password')
 const invalidLink = () => new BadRequestException('This link is invalid or has expired')
 
 @Injectable()
@@ -40,8 +42,10 @@ export class AuthService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async login(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email: normalizeEmail(email) } })
+  async login(username: string, password: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { username: normalizeUsername(username) },
+    })
     const passwordOk = await verifyPassword(password, user?.passwordHash ?? (await this.dummyHash))
     if (!user || user.status !== UserStatus.ACTIVE || this.isLocked(user)) {
       throw invalidLogin()

@@ -18,7 +18,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response) {
-    const { sessionToken, expiresAt, signedIn } = await this.auth.login(dto.email, dto.password)
+    const { sessionToken, expiresAt, signedIn } = await this.auth.login(dto.username, dto.password)
     response.cookie(SESSION_COOKIE, sessionToken, { ...sessionCookieOptions, expires: expiresAt })
     return { user: signedIn.user, csrfToken: signedIn.csrfToken }
   }

@@ -52,7 +52,7 @@ Every error has the same JSON shape:
 { "statusCode": 400, "error": "Bad Request", "message": "This link is invalid or has expired" }
 ```
 
-`message` is a string, or an array of strings for validation errors (one per invalid field, e.g. `["email must be an email"]`).
+`message` is a string, or an array of strings for validation errors (one per invalid field, e.g. `["username should not be empty"]`).
 
 | Status | Meaning | Frontend |
 |---|---|---|
@@ -60,11 +60,11 @@ Every error has the same JSON shape:
 | 401 | Not signed in (or session ended) | Go to sign in, then back to the page the user came from |
 | 403 | Signed in, not allowed (non-admin on admin routes, CSRF) | "Not allowed" page; for CSRF see above |
 | 404 | Not found, including another learner's round | Show not found |
-| 409 | Conflict: duplicate email or verb, item already answered, round finished | Show the message |
+| 409 | Conflict: duplicate username, email or verb, item already answered, round finished | Show the message |
 | 429 | Too many attempts (10 a minute per IP on login, accept-invite, reset-password) | "Too many attempts, try again in a minute" |
 | 5xx / network | Server or connection problem | Friendly retry message |
 
-Sign-in failures always answer `401 Invalid email or password`, also for unknown, disabled and locked accounts (after 5 wrong passwords an account is locked for 15 minutes). Do not try to tell these apart.
+Sign-in failures always answer `401 Invalid username or password`, also for unknown, disabled and locked accounts (after 5 wrong passwords an account is locked for 15 minutes). Do not try to tell these apart.
 
 ## 3. Types
 
@@ -88,14 +88,21 @@ type RuleGroup =
   | 'GODAN_U_TSU_RU' | 'GODAN_MU_BU_NU' | 'GODAN_KU' | 'GODAN_GU' | 'GODAN_SU'
   | 'ICHIDAN' | 'IRREGULAR_SURU' | 'IRREGULAR_KURU' | 'EXCEPTION_IKU' | 'EXCEPTION_ARU'
 
+// Users sign in with their username, which is also the only name shown in the app.
+// Usernames are 3–30 characters: lowercase a–z, 0–9, _ and -.
 interface User {
   id: string
-  email: string
-  displayName: string
+  username: string
   role: Role
   status: UserStatus
   createdAt: string
   lastActiveAt: string | null
+}
+
+// The email is for the admin only: it is returned by the admin user routes, never to the
+// user themselves, and never used to sign in.
+interface AdminUser extends User {
+  email: string
 }
 
 interface Settings {
@@ -200,7 +207,7 @@ Signed in = needs the `session` cookie. CSRF = needs `X-CSRF-Token`.
 
 | Method and path | Access | Body | Success |
 |---|---|---|---|
-| `POST /auth/login` | public | `{ email, password }` | `200 { user: User, csrfToken: string }` + cookie |
+| `POST /auth/login` | public | `{ username, password }` | `200 { user: User, csrfToken: string }` + cookie |
 | `POST /auth/logout` | signed in, CSRF | – | `204` |
 | `GET /auth/me` | signed in | – | `200 User` |
 | `GET /auth/csrf` | signed in | – | `200 { csrfToken: string }` |
@@ -254,9 +261,9 @@ Export columns, one row per form + rule group: `form, ruleGroup, attemptCount, a
 
 | Method and path | Body | Success |
 |---|---|---|
-| `GET /admin/users` | – | `200 User[]` (oldest first) |
-| `POST /admin/users` | `{ email, displayName }` | `201 { user: User, link: string, expiresAt: string }` |
-| `PATCH /admin/users/:id` | `{ displayName?, disabled?: boolean }` | `200 User` |
+| `GET /admin/users` | – | `200 AdminUser[]` (oldest first) |
+| `POST /admin/users` | `{ username, email }` | `201 { user: AdminUser, link: string, expiresAt: string }` |
+| `PATCH /admin/users/:id` | `{ username?, disabled?: boolean }` | `200 AdminUser` |
 | `DELETE /admin/users/:id` | – | `204` |
 | `POST /admin/users/:id/reset-link` | – | `201 { link: string, expiresAt: string }` |
 | `GET /admin/users/:id/progress` | – | `200 Progress` |
@@ -268,7 +275,8 @@ Export columns, one row per form + rule group: `form, ruleGroup, attemptCount, a
 - `reset-link` gives an `ACTIVE` user a reset link, and an `INVITED` user a fresh invite link. A `DISABLED` user gets `400`; enable them first.
 - Disabling ends all of the user's sessions. Re-enabling restores `ACTIVE` (or `INVITED` if they never set a password).
 - The admin cannot disable or delete their own account (`400`).
-- Duplicate email: `409`.
+- Usernames are lowercased by the API (`New-Learner` becomes `new-learner`); anything outside 3–30 characters of a–z, 0–9, `_` and `-` is `400 username must be 3-30 characters: a-z, 0-9, _ or -`. Sign-in ignores case too.
+- Duplicate username or email: `409`.
 - Verb create body: `{ dictionaryForm, reading, meaning, jlptLevel, verbClass?, excludedForms?, isActive?, baseVerbId? }`.
   - `reading` in hiragana.
   - For a compound, send `baseVerbId` (e.g. the id of する) and leave out `verbClass`; `dictionaryForm` and `reading` must end in the base verb (勉強する / べんきょうする).
@@ -281,7 +289,7 @@ Export columns, one row per form + rule group: `form, ruleGroup, attemptCount, a
 No sign-up page.
 
 ### Public
-- **Sign in**: email, password.
+- **Sign in**: username, password (`autocomplete="username"` and `"current-password"`).
 - **Accept invite** (`/invite/:token`): new password + confirmation (min 12 characters), then go to sign in.
 - **Reset password** (`/reset/:token`): same layout as accept invite.
 
@@ -304,8 +312,8 @@ No sign-up page.
 
 ### Admin (only when `user.role === 'ADMIN'`)
 - **Users**:
-  - list with status and last active;
-  - create user, then show the invite link with a copy button and its expiry;
+  - list with username, email, status and last active;
+  - create user (username + email), then show the invite link with a copy button and its expiry;
   - enable/disable;
   - delete after a confirmation dialog;
   - create a reset link (copy button and expiry);

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { AuthTokenType, UserStatus } from '../../generated/prisma/client'
-import { AuthService, publicUserSelect } from '../auth/auth.service'
+import { adminUserSelect, AuthService } from '../auth/auth.service'
 import { normalizeEmail } from '../auth/credentials'
 import { config } from '../config'
 import { onDuplicate } from '../prisma/on-duplicate'
@@ -20,16 +20,16 @@ export class UsersService {
   ) {}
 
   list() {
-    return this.prisma.user.findMany({ select: publicUserSelect, orderBy: { createdAt: 'asc' } })
+    return this.prisma.user.findMany({ select: adminUserSelect, orderBy: { createdAt: 'asc' } })
   }
 
   async create(dto: CreateUserDto) {
     const user = await this.prisma.user
       .create({
-        data: { email: normalizeEmail(dto.email), displayName: dto.displayName },
-        select: publicUserSelect,
+        data: { username: dto.username, email: normalizeEmail(dto.email) },
+        select: adminUserSelect,
       })
-      .catch(onDuplicate('A user with this email already exists'))
+      .catch(onDuplicate('A user with this username or email already exists'))
     return { user, ...(await this.createLink(user.id, AuthTokenType.INVITE)) }
   }
 
@@ -47,17 +47,19 @@ export class UsersService {
             ? UserStatus.ACTIVE
             : UserStatus.INVITED
 
-    return this.prisma.$transaction(async (tx) => {
-      // Re-enabling must not bring back sessions from before the account was disabled.
-      if (status === UserStatus.DISABLED) {
-        await tx.authSession.deleteMany({ where: { userId: id } })
-      }
-      return tx.user.update({
-        where: { id },
-        data: { displayName: dto.displayName, status },
-        select: publicUserSelect,
+    return this.prisma
+      .$transaction(async (tx) => {
+        // Re-enabling must not bring back sessions from before the account was disabled.
+        if (status === UserStatus.DISABLED) {
+          await tx.authSession.deleteMany({ where: { userId: id } })
+        }
+        return tx.user.update({
+          where: { id },
+          data: { username: dto.username, status },
+          select: adminUserSelect,
+        })
       })
-    })
+      .catch(onDuplicate('A user with this username already exists'))
   }
 
   async remove(actorId: string, id: string) {

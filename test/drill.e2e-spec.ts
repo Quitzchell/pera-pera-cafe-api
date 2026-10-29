@@ -17,7 +17,7 @@ describe('Drill (e2e)', () => {
     t = await createApp()
     await seedVerbs(t.prisma)
     await createUser(t, { email: 'learner@example.com' })
-    learner = await signIn(t, 'learner@example.com')
+    learner = await signIn(t, 'learner')
   })
 
   afterEach(async () => {
@@ -137,7 +137,7 @@ describe('Drill (e2e)', () => {
   it('keeps other learners out of a round', async () => {
     const { body: round } = await startRound('STANDARD').expect(201)
     await createUser(t, { email: 'other@example.com' })
-    const other = await signIn(t, 'other@example.com')
+    const other = await signIn(t, 'other')
 
     await answer(other, round.id, round.items[0].id, 'x').expect(404, {
       statusCode: 404,

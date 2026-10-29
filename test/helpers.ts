@@ -31,7 +31,7 @@ export async function createUser(
 ) {
   return prisma.user.create({
     data: {
-      displayName: data.email.split('@')[0],
+      username: data.email.split('@')[0],
       passwordHash: await (passwordHash ??= hashPassword(PASSWORD)),
       role: Role.LEARNER,
       status: UserStatus.ACTIVE,
@@ -41,8 +41,8 @@ export async function createUser(
 }
 
 // Headers for follow-up requests as the signed-in user.
-export async function signIn({ http }: TestApp, email: string, password = PASSWORD) {
-  const response = await http().post('/api/auth/login').send({ email, password }).expect(200)
+export async function signIn({ http }: TestApp, username: string, password = PASSWORD) {
+  const response = await http().post('/api/auth/login').send({ username, password }).expect(200)
   const cookie = response.get('Set-Cookie')?.[0]?.split(';')[0] ?? ''
   return { Cookie: cookie, 'X-CSRF-Token': response.body.csrfToken as string }
 }

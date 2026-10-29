@@ -50,3 +50,7 @@ export function tokensEqual(a: string | undefined, b: string): boolean {
 }
 
 export const normalizeEmail = (email: string) => email.trim().toLowerCase()
+
+export const USERNAME_PATTERN = /^[a-z0-9_-]{3,30}$/
+
+export const normalizeUsername = (username: string) => username.trim().toLowerCase()
