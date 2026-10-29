@@ -27,14 +27,17 @@ export function applyAttempt(
   isCorrect: boolean,
   at: Date,
 ): Progress {
-  const box = isCorrect ? Math.min((progress?.box ?? 0) + 1, MAX_BOX) : 0
-  return {
-    box,
-    dueAt: new Date(at.getTime() + INTERVAL_DAYS[box] * DAY),
+  const counts = {
     attemptCount: (progress?.attemptCount ?? 0) + 1,
     correctCount: (progress?.correctCount ?? 0) + (isCorrect ? 1 : 0),
     lastPracticedAt: at,
   }
+  // Practising a rule group before it is due does not move it up, so the spacing holds.
+  if (isCorrect && progress && at < progress.dueAt) {
+    return { box: progress.box, dueAt: progress.dueAt, ...counts }
+  }
+  const box = isCorrect ? Math.min((progress?.box ?? 0) + 1, MAX_BOX) : 0
+  return { box, dueAt: new Date(at.getTime() + INTERVAL_DAYS[box] * DAY), ...counts }
 }
 
 export function projectProgress(attempts: AttemptEvent[]): RuleProgressRow[] {

@@ -8,6 +8,7 @@ import {
   MaxLength,
 } from 'class-validator'
 import { ConjugationForm, JlptLevel, VerbClass } from '../../../generated/prisma/client'
+import { IsOmittable } from '../../validation'
 
 export class CreateVerbDto {
   @IsString()
@@ -26,18 +27,18 @@ export class CreateVerbDto {
   meaning: string
 
   // Taken from the base verb for compounds.
-  @IsOptional()
+  @IsOmittable()
   @IsEnum(VerbClass)
   verbClass?: VerbClass
 
   @IsEnum(JlptLevel)
   jlptLevel: JlptLevel
 
-  @IsOptional()
+  @IsOmittable()
   @IsBoolean()
   isActive?: boolean
 
-  @IsOptional()
+  @IsOmittable()
   @IsArray()
   @IsEnum(ConjugationForm, { each: true })
   excludedForms?: ConjugationForm[]

@@ -5,43 +5,43 @@ import {
   IsBoolean,
   IsEnum,
   IsInt,
-  IsOptional,
   IsTimeZone,
   Max,
   Min,
 } from 'class-validator'
 import { ConjugationForm, JlptLevel } from '../../../generated/prisma/client'
+import { IsOmittable } from '../../validation'
 
 export class UpdateSettingsDto {
-  @IsOptional()
+  @IsOmittable()
   @IsArray()
   @ArrayNotEmpty()
   @ArrayUnique()
   @IsEnum(ConjugationForm, { each: true })
   enabledForms?: ConjugationForm[]
 
-  @IsOptional()
+  @IsOmittable()
   @IsArray()
   @ArrayNotEmpty()
   @ArrayUnique()
   @IsEnum(JlptLevel, { each: true })
   jlptLevels?: JlptLevel[]
 
-  @IsOptional()
+  @IsOmittable()
   @IsInt()
   @Min(5)
   @Max(50)
   roundSize?: number
 
-  @IsOptional()
+  @IsOmittable()
   @IsBoolean()
   romajiInput?: boolean
 
-  @IsOptional()
+  @IsOmittable()
   @IsBoolean()
   showFurigana?: boolean
 
-  @IsOptional()
+  @IsOmittable()
   @IsTimeZone()
   timeZone?: string
 }

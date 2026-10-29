@@ -13,6 +13,7 @@ import { drillableForms, toConjugatable } from '../verbs/verb-check'
 import { checkAnswer } from './answer-check'
 import { examChoices } from './exam-choices'
 import { applyAttempt } from './leitner'
+import { lockLearner } from './rule-progress'
 import { buildRound } from './round-builder'
 
 type VerbWithBase = Verb & { baseVerb: Verb | null }
@@ -107,9 +108,16 @@ export class DrillService {
     const { ruleGroup, isCorrect } = result
     await this.prisma
       .$transaction(async (tx) => {
-        // One answer of this learner at a time, so concurrent answers cannot overwrite each
+        // One write of this learner at a time, so concurrent answers cannot overwrite each
         // other's RuleProgress, and Attempt order matches the order progress was applied in.
-        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${userId}))`
+        await lockLearner(tx, userId)
+        const { finishedAt } = await tx.drillRound.findUniqueOrThrow({
+          where: { id: roundId },
+          select: { finishedAt: true },
+        })
+        if (finishedAt) {
+          throw new ConflictException('This round is finished')
+        }
         const now = new Date()
         await tx.attempt.create({
           data: {
@@ -150,12 +158,15 @@ export class DrillService {
     const round = await this.findOwnRound(userId, roundId)
     const finishedAt =
       round.finishedAt ??
-      (
-        await this.prisma.drillRound.update({
+      (await this.prisma.$transaction(async (tx) => {
+        // Waits for an answer in flight, so the summary below includes it.
+        await lockLearner(tx, userId)
+        const { finishedAt } = await tx.drillRound.update({
           where: { id: roundId },
           data: { finishedAt: new Date() },
         })
-      ).finishedAt
+        return finishedAt
+      }))
     const items = await this.prisma.drillItem.findMany({
       where: { roundId },
       orderBy: { position: 'asc' },

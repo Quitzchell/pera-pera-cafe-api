@@ -50,7 +50,10 @@ A hand-written table of 37 verbs and 3 compounds across all forms tests it.
 - **Sessions:** the cookie is `HttpOnly; Secure; SameSite=Lax`, and the database stores only a hash of its token.
   - Logout, disabling the user and a password reset all end the session.
 - **CSRF:** a session-bound token, sent back by the client in the `X-CSRF-Token` header on every state-changing request.
-- **Brute force:** 5 wrong passwords lock the account for 15 minutes, and login and the token routes are rate-limited to 10 requests a minute per IP.
+- **Brute force:**
+  - From the 5th wrong password on, the next attempt is only checked after a wait: 1 minute, then 2, and so on, up to 15. Attempts during the wait don't count, and the right password after the wait always signs in, so nobody can lock an account for good.
+  - Login and the token routes are rate-limited to 10 requests a minute per IP.
+  - At most 4 password hashes run at once; extra logins queue.
 - **Links:** invite and reset links are single-use, and only their hash is stored.
 - **Errors** always come back as `{ statusCode, error, message }`.
 

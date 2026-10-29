@@ -55,7 +55,14 @@ describe('Drill (e2e)', () => {
     const updated = await settings({ roundSize: 10, enabledForms: ['TE'], showFurigana: false })
     expect(updated.body).toMatchObject({ roundSize: 10, enabledForms: ['TE'], showFurigana: false })
 
-    for (const invalid of [{ roundSize: 2 }, { enabledForms: [] }, { jlptLevels: ['N9'] }]) {
+    for (const invalid of [
+      { roundSize: 2 },
+      { enabledForms: [] },
+      { jlptLevels: ['N9'] },
+      { roundSize: null },
+      { enabledForms: null },
+      { timeZone: null },
+    ]) {
       await t.http().patch('/api/me/settings').set(learner).send(invalid).expect(400)
     }
   })

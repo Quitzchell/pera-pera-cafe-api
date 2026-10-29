@@ -57,21 +57,49 @@ describe('Auth (e2e)', () => {
     })
   })
 
-  it('locks the account after 5 failed attempts, even for the right password', async () => {
+  it('slows sign-in down after 5 failures with a wait that grows per failure', async () => {
     await createUser(t, { email: 'learner@example.com' })
     const login = (password: string) =>
       t.http().post('/api/auth/login').send({ username: 'learner', password })
+    const where = { email: 'learner@example.com' }
+    const waitMinutes = async () => {
+      const { lockedUntil } = await t.prisma.user.findUniqueOrThrow({ where })
+      return lockedUntil ? Math.round((lockedUntil.getTime() - Date.now()) / 60_000) : 0
+    }
+    const endWait = () =>
+      t.prisma.user.update({ where, data: { lockedUntil: new Date(Date.now() - 1000) } })
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
       await login('wrong password!').expect(401)
     }
-    await login(PASSWORD).expect(401)
+    expect(await waitMinutes()).toBe(0)
+    await login('wrong password!').expect(401)
+    expect(await waitMinutes()).toBe(1)
 
-    await t.prisma.user.update({
-      where: { email: 'learner@example.com' },
-      data: { lockedUntil: new Date(Date.now() - 1000) },
-    })
+    // During the wait even the right password is refused, and the try does not count.
+    await login(PASSWORD).expect(401)
+    await login('wrong password!').expect(401)
+    expect(await t.prisma.user.findUniqueOrThrow({ where })).toMatchObject({ failedLoginCount: 5 })
+
+    await endWait()
+    await login('wrong password!').expect(401)
+    expect(await waitMinutes()).toBe(2)
+
+    await endWait()
     await login(PASSWORD).expect(200)
+    expect(await t.prisma.user.findUniqueOrThrow({ where })).toMatchObject({
+      failedLoginCount: 0,
+      lockedUntil: null,
+    })
+  })
+
+  it('caps the wait at 15 minutes', async () => {
+    await createUser(t, { email: 'learner@example.com', failedLoginCount: 30 })
+    await t.http().post('/api/auth/login').send({ username: 'learner', password: 'nope' })
+    const { lockedUntil } = await t.prisma.user.findUniqueOrThrow({
+      where: { email: 'learner@example.com' },
+    })
+    expect(Math.round((lockedUntil!.getTime() - Date.now()) / 60_000)).toBe(15)
   })
 
   it('rate-limits login attempts per IP', async () => {

@@ -1,12 +1,6 @@
-import { PrismaPg } from '@prisma/adapter-pg'
 import { readFileSync } from 'node:fs'
-import {
-  ConjugationForm,
-  JlptLevel,
-  PrismaClient,
-  Verb,
-  VerbClass,
-} from '../../generated/prisma/client'
+import { ConjugationForm, JlptLevel, Verb, VerbClass } from '../../generated/prisma/client'
+import { PrismaService } from '../prisma/prisma.service'
 import { prepareVerb } from '../verbs/verb-check'
 
 export interface SeedVerb {
@@ -22,9 +16,7 @@ export interface SeedVerb {
 
 async function main() {
   const seed = JSON.parse(readFileSync('prisma/seed-data/verbs.json', 'utf8')) as SeedVerb[]
-  const prisma = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
-  })
+  const prisma = new PrismaService()
   const saved = new Map<string, Verb>()
   const basesFirst = [...seed].sort((a, b) => Number(!!a.base) - Number(!!b.base))
 
