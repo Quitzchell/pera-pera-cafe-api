@@ -10,6 +10,7 @@ services:
       - .env
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/pera_pera_cafe?schema=public
+      COOKIE_SECURE: 'false'
     volumes:
       - .:/app
       # Keep the image's Linux install; the host one has macOS binaries.
