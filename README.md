@@ -76,7 +76,7 @@ Requirements: Docker, and a PostgreSQL container reachable on the external Docke
 echo 'POSTGRES_PASSWORD=<your local postgres password>' > .env
 make up                      # dev server with hot reload on http://localhost:3000
 docker compose run --rm --no-deps app npx prisma migrate deploy
-docker compose run --rm --no-deps app npx prisma db seed     # 174 common N5/N4 verbs
+docker compose run --rm --no-deps app npx prisma db seed     # 280 common N5, N4 and N3 verbs
 make logs
 ```
 

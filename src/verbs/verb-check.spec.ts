@@ -113,9 +113,10 @@ describe('seed data', () => {
   })
   const baseOf = (v: SeedVerb) => (v.base ? stored(byForm.get(v.base)!) : undefined)
 
-  it('has about 150 verbs and 5-8 compounds, without duplicates', () => {
+  it('has at least 150 verbs, 8 compounds and every JLPT level, without duplicates', () => {
     expect(seed.length).toBeGreaterThanOrEqual(150)
     expect(seed.filter((v) => v.base)).toHaveLength(8)
+    expect(new Set(seed.map((v) => v.jlptLevel))).toEqual(new Set(['N5', 'N4', 'N3']))
     expect(new Set(seed.map((v) => `${v.dictionaryForm}/${v.reading}`)).size).toBe(seed.length)
   })
 
