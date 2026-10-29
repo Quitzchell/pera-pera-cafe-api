@@ -7,7 +7,7 @@ import {
   Verb,
   VerbClass,
 } from '../../generated/prisma/client'
-import { checkVerb } from '../verbs/verb-check'
+import { prepareVerb } from '../verbs/verb-check'
 
 export interface SeedVerb {
   dictionaryForm: string
@@ -34,17 +34,7 @@ async function main() {
       if (baseForm && !base) {
         throw new Error(`${verb.dictionaryForm}: unknown base verb ${baseForm}`)
       }
-      const verbClass = base?.verbClass ?? verb.verbClass
-      if (!verbClass) {
-        throw new Error(`${verb.dictionaryForm}: verbClass is required`)
-      }
-      const data = {
-        ...verb,
-        verbClass,
-        excludedForms: verb.excludedForms ?? [],
-        baseVerbId: base?.id ?? null,
-      }
-      const warnings = checkVerb(data, base)
+      const { data, warnings } = prepareVerb(verb, base)
       if (warnings.length > 0) {
         throw new Error(warnings.join('; '))
       }

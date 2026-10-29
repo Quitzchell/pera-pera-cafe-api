@@ -114,3 +114,26 @@ export function checkVerb(
   }
   return []
 }
+
+// The verb as it is stored: a compound takes its class from the base verb. Shared by the
+// admin API and the seed, so both apply the same rules.
+export function prepareVerb<
+  T extends {
+    dictionaryForm: string
+    reading: string
+    verbClass?: VerbClass
+    excludedForms?: ConjugationForm[]
+  },
+>(input: T, base?: StoredVerb & { id: string; baseVerbId: string | null }) {
+  const verbClass = base?.verbClass ?? input.verbClass
+  if (!verbClass) {
+    throw new ConjugationError('verbClass is required')
+  }
+  const data = {
+    ...input,
+    verbClass,
+    excludedForms: input.excludedForms ?? [],
+    baseVerbId: base?.id ?? null,
+  }
+  return { data, warnings: checkVerb(data, base) }
+}

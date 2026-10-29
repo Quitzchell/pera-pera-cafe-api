@@ -113,34 +113,36 @@ export class AuthService {
   }
 
   async setPasswordWithToken(type: AuthTokenType, token: string, password: string) {
+    const record = await this.prisma.authToken.findUnique({
+      where: { tokenHash: hashToken(token) },
+      include: { user: { select: { status: true } } },
+    })
+    if (
+      !record ||
+      record.type !== type ||
+      record.usedAt ||
+      record.expiresAt <= new Date() ||
+      record.user.status === UserStatus.DISABLED
+    ) {
+      throw invalidLink()
+    }
+    // Hashed only for a valid token, so random tokens cost no argon2 work.
     const passwordHash = await hashPassword(password)
-    const now = new Date()
+
     await this.prisma.$transaction(async (tx) => {
-      const record = await tx.authToken.findUnique({
-        where: { tokenHash: hashToken(token) },
-        include: { user: { select: { status: true } } },
-      })
-      if (
-        !record ||
-        record.type !== type ||
-        record.usedAt ||
-        record.expiresAt <= now ||
-        record.user.status === UserStatus.DISABLED
-      ) {
-        throw invalidLink()
-      }
-      // Guards against two requests redeeming the same token at once.
-      const { count } = await tx.authToken.updateMany({
+      // Checked again: another request may have used the token, or the admin disabled the
+      // user, while the password was being hashed.
+      const redeemed = await tx.authToken.updateMany({
         where: { id: record.id, usedAt: null },
-        data: { usedAt: now },
+        data: { usedAt: new Date() },
       })
-      if (count !== 1) {
-        throw invalidLink()
-      }
-      await tx.user.update({
-        where: { id: record.userId },
+      const activated = await tx.user.updateMany({
+        where: { id: record.userId, status: { not: UserStatus.DISABLED } },
         data: { passwordHash, status: UserStatus.ACTIVE, failedLoginCount: 0, lockedUntil: null },
       })
+      if (redeemed.count !== 1 || activated.count !== 1) {
+        throw invalidLink()
+      }
       await tx.authSession.deleteMany({ where: { userId: record.userId } })
     })
   }

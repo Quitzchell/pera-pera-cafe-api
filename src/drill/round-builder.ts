@@ -1,4 +1,5 @@
 import { ConjugationForm, RuleGroup } from '../conjugation'
+import { shuffle } from './shuffle'
 
 export type DrillMode = 'STANDARD' | 'CONTRAST' | 'EXAM'
 
@@ -57,15 +58,6 @@ interface Group {
 type Rank = [tier: number, primary: number, secondary: number]
 
 const compare = (a: Rank, b: Rank) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]
-
-function shuffle<T>(items: T[], random: () => number): T[] {
-  const result = [...items]
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1))
-    ;[result[i], result[j]] = [result[j], result[i]]
-  }
-  return result
-}
 
 function groupsFor(mode: DrillMode, candidates: Candidate[], random: () => number): Group[] {
   const groups = new Map<string, Group>()

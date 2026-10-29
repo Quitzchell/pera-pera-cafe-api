@@ -91,6 +91,30 @@ describe('Admin verbs (e2e)', () => {
       .expect(400)
   })
 
+  it('does not let a verb with compounds become a compound itself', async () => {
+    const iku = await post({ ...kaeru, dictionaryForm: '行く', reading: 'いく', meaning: 'to go' })
+    const deteIku = await post({
+      ...kaeru,
+      dictionaryForm: '出て行く',
+      reading: 'でていく',
+      meaning: 'to leave',
+    })
+    await post({
+      dictionaryForm: 'また出て行く',
+      reading: 'またでていく',
+      meaning: 'to leave again',
+      jlptLevel: 'N4',
+      baseVerbId: deteIku.body.verb.id,
+    }).expect(201)
+
+    await t
+      .http()
+      .patch(`/api/admin/verbs/${deteIku.body.verb.id}`)
+      .set(admin)
+      .send({ baseVerbId: iku.body.verb.id })
+      .expect(400)
+  })
+
   it('updates a verb and re-checks it', async () => {
     const created = await post(kaeru)
     const url = `/api/admin/verbs/${created.body.verb.id}`
