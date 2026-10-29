@@ -1,42 +1,12 @@
-import { JlptLevel, VerbClass } from '../generated/prisma/client'
-import { conjugate, ConjugationForm } from '../src/conjugation'
+import { ConjugationForm } from '../src/conjugation'
 import { rebuildRuleProgress } from '../src/drill/rule-progress'
-import { PrismaService } from '../src/prisma/prisma.service'
-import { toConjugatable } from '../src/verbs/verb-check'
-import { createApp, createUser, signIn, TestApp } from './helpers'
+import { createApp, createUser, expectedAnswer, seedVerbs, signIn, TestApp, VERBS } from './helpers'
 
 interface RoundItem {
   id: string
   form: ConjugationForm
   choices?: string[]
   verb: { dictionaryForm: string }
-}
-
-const VERBS: [string, string, VerbClass][] = [
-  ['書く', 'かく', 'GODAN'],
-  ['泳ぐ', 'およぐ', 'GODAN'],
-  ['話す', 'はなす', 'GODAN'],
-  ['行く', 'いく', 'GODAN'],
-  ['食べる', 'たべる', 'ICHIDAN'],
-  ['見る', 'みる', 'ICHIDAN'],
-  ['来る', 'くる', 'IRREGULAR'],
-  ['する', 'する', 'IRREGULAR'],
-]
-
-async function seedVerbs(prisma: PrismaService) {
-  for (const [dictionaryForm, reading, verbClass] of VERBS) {
-    await prisma.verb.create({
-      data: { dictionaryForm, reading, verbClass, meaning: 'x', jlptLevel: JlptLevel.N5 },
-    })
-  }
-}
-
-async function expectedAnswer(prisma: PrismaService, itemId: string) {
-  const item = await prisma.drillItem.findUniqueOrThrow({
-    where: { id: itemId },
-    include: { verb: { include: { baseVerb: true } } },
-  })
-  return conjugate(toConjugatable(item.verb, item.verb.baseVerb ?? undefined), item.form)
 }
 
 describe('Drill (e2e)', () => {
@@ -78,6 +48,7 @@ describe('Drill (e2e)', () => {
       roundSize: 20,
       romajiInput: false,
       showFurigana: true,
+      timeZone: 'UTC',
     })
     expect(body.enabledForms).toHaveLength(16)
 

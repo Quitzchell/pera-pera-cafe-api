@@ -1,11 +1,13 @@
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { Prisma, Role, UserStatus } from '../generated/prisma/client'
+import { JlptLevel, Prisma, Role, UserStatus, VerbClass } from '../generated/prisma/client'
 import { AppModule } from '../src/app.module'
 import { configureApp } from '../src/app.setup'
 import { hashPassword } from '../src/auth/credentials'
+import { conjugate } from '../src/conjugation'
 import { PrismaService } from '../src/prisma/prisma.service'
+import { toConjugatable } from '../src/verbs/verb-check'
 
 export const PASSWORD = 'correct horse battery'
 
@@ -43,4 +45,32 @@ export async function signIn({ http }: TestApp, email: string, password = PASSWO
   const response = await http().post('/api/auth/login').send({ email, password }).expect(200)
   const cookie = response.get('Set-Cookie')?.[0]?.split(';')[0] ?? ''
   return { Cookie: cookie, 'X-CSRF-Token': response.body.csrfToken as string }
+}
+
+export const VERBS: [string, string, VerbClass][] = [
+  ['書く', 'かく', 'GODAN'],
+  ['泳ぐ', 'およぐ', 'GODAN'],
+  ['話す', 'はなす', 'GODAN'],
+  ['行く', 'いく', 'GODAN'],
+  ['食べる', 'たべる', 'ICHIDAN'],
+  ['見る', 'みる', 'ICHIDAN'],
+  ['来る', 'くる', 'IRREGULAR'],
+  ['する', 'する', 'IRREGULAR'],
+]
+
+export async function seedVerbs(prisma: PrismaService) {
+  for (const [dictionaryForm, reading, verbClass] of VERBS) {
+    await prisma.verb.create({
+      data: { dictionaryForm, reading, verbClass, meaning: 'x', jlptLevel: JlptLevel.N5 },
+    })
+  }
+}
+
+// The answer the engine expects for a drill item, as the client would have to type it.
+export async function expectedAnswer(prisma: PrismaService, itemId: string) {
+  const item = await prisma.drillItem.findUniqueOrThrow({
+    where: { id: itemId },
+    include: { verb: { include: { baseVerb: true } } },
+  })
+  return conjugate(toConjugatable(item.verb, item.verb.baseVerb ?? undefined), item.form)
 }

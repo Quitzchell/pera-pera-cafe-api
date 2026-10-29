@@ -10,6 +10,7 @@ const select = {
   roundSize: true,
   romajiInput: true,
   showFurigana: true,
+  timeZone: true,
 }
 
 @Injectable()
@@ -21,8 +22,8 @@ export class SettingsService {
   }
 
   update(userId: string, dto: UpdateSettingsDto) {
-    const { enabledForms, jlptLevels, roundSize, romajiInput, showFurigana } = dto
-    const changes = { enabledForms, jlptLevels, roundSize, romajiInput, showFurigana }
+    const { enabledForms, jlptLevels, roundSize, romajiInput, showFurigana, timeZone } = dto
+    const changes = { enabledForms, jlptLevels, roundSize, romajiInput, showFurigana, timeZone }
     return this.prisma.userSettings.upsert({
       where: { userId },
       create: {

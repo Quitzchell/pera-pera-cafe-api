@@ -31,6 +31,11 @@ export class UsersController {
     return this.users.remove(session.user.id, id)
   }
 
+  @Get(':id/progress')
+  progress(@Param('id') id: string) {
+    return this.users.progressOf(id)
+  }
+
   @Post(':id/reset-link')
   resetLink(@Param('id') id: string) {
     return this.users.resetLink(id)

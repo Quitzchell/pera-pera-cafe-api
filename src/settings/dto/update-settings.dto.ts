@@ -6,6 +6,7 @@ import {
   IsEnum,
   IsInt,
   IsOptional,
+  IsTimeZone,
   Max,
   Min,
 } from 'class-validator'
@@ -39,4 +40,8 @@ export class UpdateSettingsDto {
   @IsOptional()
   @IsBoolean()
   showFurigana?: boolean
+
+  @IsOptional()
+  @IsTimeZone()
+  timeZone?: string
 }
