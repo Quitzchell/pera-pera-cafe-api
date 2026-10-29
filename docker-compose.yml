@@ -5,7 +5,7 @@ services:
       dockerfile: ./Dockerfile.dev
     container_name: pera-pera-cafe-nest
     ports:
-      - '3000:3000'
+      - '${APP_PORT:-3000}:3000'
     env_file:
       - .env
     environment:
