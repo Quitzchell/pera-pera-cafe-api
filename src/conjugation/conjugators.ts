@@ -61,6 +61,7 @@ const GODAN_SUFFIXES: Record<ConjugationForm, (row: GodanRow) => string> = {
   CONDITIONAL_BA: (r) => `${r.e}ば`,
   IMPERATIVE: (r) => r.e,
   PROHIBITIVE: (r) => `${r.u}な`,
+  POTENTIAL_CONDITIONAL: (r) => `${r.e}れば`,
 }
 
 const ICHIDAN_SUFFIXES: Record<ConjugationForm, string> = {
@@ -79,6 +80,7 @@ const ICHIDAN_SUFFIXES: Record<ConjugationForm, string> = {
   CONDITIONAL_BA: 'れば',
   IMPERATIVE: 'ろ',
   PROHIBITIVE: 'るな',
+  POTENTIAL_CONDITIONAL: 'られれば',
 }
 
 const SURU_FORMS: Record<ConjugationForm, string> = {
@@ -97,6 +99,7 @@ const SURU_FORMS: Record<ConjugationForm, string> = {
   CONDITIONAL_BA: 'すれば',
   IMPERATIVE: 'しろ',
   PROHIBITIVE: 'するな',
+  POTENTIAL_CONDITIONAL: 'できれば',
 }
 
 const KURU_FORMS: Record<ConjugationForm, string> = {
@@ -115,6 +118,7 @@ const KURU_FORMS: Record<ConjugationForm, string> = {
   CONDITIONAL_BA: 'くれば',
   IMPERATIVE: 'こい',
   PROHIBITIVE: 'くるな',
+  POTENTIAL_CONDITIONAL: 'こられれば',
 }
 
 const stem = (word: string) => word.slice(0, -1)
