@@ -1,13 +1,9 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common'
-import { AuthTokenType, Prisma, UserStatus } from '../../generated/prisma/client'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { AuthTokenType, UserStatus } from '../../generated/prisma/client'
 import { AuthService, publicUserSelect } from '../auth/auth.service'
 import { normalizeEmail } from '../auth/credentials'
 import { config } from '../config'
+import { onDuplicate } from '../prisma/on-duplicate'
 import { PrismaService } from '../prisma/prisma.service'
 import { ProgressService } from '../progress/progress.service'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -33,12 +29,7 @@ export class UsersService {
         data: { email: normalizeEmail(dto.email), displayName: dto.displayName },
         select: publicUserSelect,
       })
-      .catch((error: unknown) => {
-        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-          throw new ConflictException('A user with this email already exists')
-        }
-        throw error
-      })
+      .catch(onDuplicate('A user with this email already exists'))
     return { user, ...(await this.createLink(user.id, AuthTokenType.INVITE)) }
   }
 

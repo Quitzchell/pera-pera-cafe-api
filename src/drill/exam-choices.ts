@@ -8,6 +8,7 @@ import {
   VerbClass,
 } from '../conjugation'
 import { acceptedAnswers, raNukiForms } from './answer-check'
+import { shuffle } from './shuffle'
 
 const CHOICES = 4
 
@@ -102,10 +103,5 @@ export function examChoices(
     .filter((kana) => !accepted.has(kana))
     .slice(0, CHOICES - 1)
 
-  const choices = [correct.kana, ...distractors]
-  for (let i = choices.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1))
-    ;[choices[i], choices[j]] = [choices[j], choices[i]]
-  }
-  return choices
+  return shuffle([correct.kana, ...distractors], random)
 }

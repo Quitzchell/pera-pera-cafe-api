@@ -173,6 +173,57 @@ describe('Drill (e2e)', () => {
     await startRound('CONTRAST').expect(400)
   })
 
+  it('keeps progress consistent when answers arrive at the same time', async () => {
+    await settings({ roundSize: VERBS.length, enabledForms: ['TE'] })
+    const { body: round } = await startRound('STANDARD').expect(201)
+
+    await Promise.all(
+      (round.items as RoundItem[]).map(async (item) =>
+        answer(learner, round.id, item.id, (await expectedAnswer(t.prisma, item.id)).kana).expect(
+          200,
+        ),
+      ),
+    )
+
+    const { id: userId } = await t.prisma.user.findUniqueOrThrow({
+      where: { email: 'learner@example.com' },
+    })
+    const order = [{ form: 'asc' as const }, { ruleGroup: 'asc' as const }]
+    const live = await t.prisma.ruleProgress.findMany({ where: { userId }, orderBy: order })
+    expect(live.find((row) => row.ruleGroup === 'ICHIDAN')?.attemptCount).toBe(2)
+    await rebuildRuleProgress(t.prisma, userId)
+    expect(await t.prisma.ruleProgress.findMany({ where: { userId }, orderBy: order })).toEqual(
+      live,
+    )
+  })
+
+  it('copes with a verb the admin changed during the round', async () => {
+    await settings({ roundSize: VERBS.length, enabledForms: ['TE'] })
+    const { body: round } = await startRound('STANDARD').expect(201)
+    const items = round.items as RoundItem[]
+    const itemFor = (dictionaryForm: string) =>
+      items.find((i) => i.verb.dictionaryForm === dictionaryForm)!
+
+    await answer(learner, round.id, itemFor('書く').id, 'wrong').expect(200)
+    // Godan verbs ending in く cannot be conjugated as ichidan.
+    await t.prisma.verb.updateMany({
+      where: { dictionaryForm: { in: ['書く', '泳ぐ'] } },
+      data: { verbClass: 'ICHIDAN' },
+    })
+
+    await answer(learner, round.id, itemFor('泳ぐ').id, 'およいで')
+      .expect(409)
+      .expect((res) =>
+        expect(res.body.message).toBe('This verb was changed during the round; skip this item'),
+      )
+    const { body: summary } = await t
+      .http()
+      .post(`/api/drill/rounds/${round.id}/finish`)
+      .set(learner)
+      .expect(200)
+    expect(summary).toMatchObject({ answered: 1, correct: 0, mistakes: [] })
+  })
+
   it('explains when no verbs match the settings', async () => {
     await settings({ jlptLevels: ['N3'] })
     const { body } = await startRound('STANDARD').expect(400)

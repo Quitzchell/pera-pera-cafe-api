@@ -47,6 +47,28 @@ describe('Progress (e2e)', () => {
     })
   })
 
+  it('does not count a round finished without answers', async () => {
+    const { body: round } = await t
+      .http()
+      .post('/api/drill/rounds')
+      .set(learner)
+      .send({ mode: 'STANDARD' })
+      .expect(201)
+    await t.http().post(`/api/drill/rounds/${round.id}/finish`).set(learner).expect(200)
+
+    const { body } = await t.http().get('/api/progress').set(learner).expect(200)
+    expect(body.totals.roundsFinished).toBe(0)
+    expect(body.streak).toBe(0)
+  })
+
+  it('reads settings without creating them', async () => {
+    await createUser(t, { email: 'admin@example.com', role: Role.ADMIN })
+    const admin = await signIn(t, 'admin@example.com')
+    await t.http().get(`/api/admin/users/${learnerId}/progress`).set(admin).expect(200)
+    await t.http().get('/api/progress').set(learner).expect(200)
+    expect(await t.prisma.userSettings.count()).toBe(0)
+  })
+
   it('reports totals, the streak and rule groups weakest first', async () => {
     await playRound(learner)
 
@@ -92,13 +114,33 @@ describe('Progress (e2e)', () => {
 
     const day = 86_400_000
     const now = Date.now()
-    await t.prisma.drillRound.createMany({
-      data: [1, 2].map((daysAgo) => ({
-        userId: learnerId,
-        mode: 'STANDARD' as const,
-        finishedAt: new Date(now - daysAgo * day),
-      })),
-    })
+    const { id: verbId } = await t.prisma.verb.findFirstOrThrow()
+    for (const daysAgo of [1, 2]) {
+      await t.prisma.drillRound.create({
+        data: {
+          userId: learnerId,
+          mode: 'STANDARD',
+          finishedAt: new Date(now - daysAgo * day),
+          items: {
+            create: {
+              verbId,
+              form: 'TE',
+              position: 0,
+              attempt: {
+                create: {
+                  userId: learnerId,
+                  verbId,
+                  form: 'TE',
+                  ruleGroup: 'GODAN_KU',
+                  answer: 'x',
+                  isCorrect: false,
+                },
+              },
+            },
+          },
+        },
+      })
+    }
     await t.prisma.ruleProgress.create({
       data: {
         userId: learnerId,

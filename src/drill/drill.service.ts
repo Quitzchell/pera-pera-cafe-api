@@ -4,8 +4,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
-import { DrillMode, DrillRound, Prisma, Verb } from '../../generated/prisma/client'
-import { conjugate, ConjugationForm } from '../conjugation'
+import { DrillMode, DrillRound, Verb } from '../../generated/prisma/client'
+import { conjugate, ConjugationError, ConjugationForm } from '../conjugation'
+import { onDuplicate } from '../prisma/on-duplicate'
 import { PrismaService } from '../prisma/prisma.service'
 import { SettingsService } from '../settings/settings.service'
 import { drillableForms, toConjugatable } from '../verbs/verb-check'
@@ -111,14 +112,15 @@ export class DrillService {
       throw new ConflictException('This item is already answered')
     }
 
-    const result = checkAnswer(answer, engineVerb(item.verb), item.form)
+    const result = this.check(answer, item.verb, item.form)
     const { form } = item
     const { ruleGroup, isCorrect } = result
-    const now = new Date()
-    // shortcut: read-then-write on RuleProgress; fine while one learner answers one item at a
-    // time. If it ever drifts, rebuild-progress recomputes it from the Attempt log.
     await this.prisma
       .$transaction(async (tx) => {
+        // One answer of this learner at a time, so concurrent answers cannot overwrite each
+        // other's RuleProgress, and Attempt order matches the order progress was applied in.
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${userId}))`
+        const now = new Date()
         await tx.attempt.create({
           data: {
             userId,
@@ -140,12 +142,7 @@ export class DrillService {
           update: next,
         })
       })
-      .catch((error: unknown) => {
-        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-          throw new ConflictException('This item is already answered')
-        }
-        throw error
-      })
+      .catch(onDuplicate('This item is already answered'))
     return result
   }
 
@@ -168,17 +165,22 @@ export class DrillService {
     const answered = items.filter((item) => item.attempt)
     const mistakes = answered
       .filter((item) => !item.attempt!.isCorrect)
-      .map((item) => {
-        const { kanji, kana, ruleHint } = conjugate(engineVerb(item.verb), item.form)
-        return {
-          itemId: item.id,
-          position: item.position,
-          verb: verbSummary(item.verb),
-          form: item.form,
-          answer: item.attempt!.answer,
-          expected: { kanji, kana },
-          ruleHint,
+      .flatMap((item) => {
+        const conjugation = this.conjugateCurrent(item.verb, item.form)
+        if (!conjugation) {
+          return []
         }
+        return [
+          {
+            itemId: item.id,
+            position: item.position,
+            verb: verbSummary(item.verb),
+            form: item.form,
+            answer: item.attempt!.answer,
+            expected: { kanji: conjugation.kanji, kana: conjugation.kana },
+            ruleHint: conjugation.ruleHint,
+          },
+        ]
       })
     return {
       id: round.id,
@@ -187,8 +189,31 @@ export class DrillService {
       finishedAt,
       total: items.length,
       answered: answered.length,
-      correct: answered.length - mistakes.length,
+      correct: answered.filter((item) => item.attempt!.isCorrect).length,
       mistakes,
+    }
+  }
+
+  // The admin may have edited the verb since the round started, so it may no longer have this form.
+  private check(answer: string, verb: VerbWithBase, form: ConjugationForm) {
+    try {
+      return checkAnswer(answer, engineVerb(verb), form)
+    } catch (error) {
+      if (error instanceof ConjugationError) {
+        throw new ConflictException('This verb was changed during the round; skip this item')
+      }
+      throw error
+    }
+  }
+
+  private conjugateCurrent(verb: VerbWithBase, form: ConjugationForm) {
+    try {
+      return conjugate(engineVerb(verb), form)
+    } catch (error) {
+      if (error instanceof ConjugationError) {
+        return null
+      }
+      throw error
     }
   }
 

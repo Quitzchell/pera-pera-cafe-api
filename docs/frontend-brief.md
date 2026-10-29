@@ -171,10 +171,10 @@ interface Progress {
     attempts: number
     correct: number
     accuracy: number      // 0–1
-    roundsFinished: number
+    roundsFinished: number // finished rounds with at least one answer
     dueToday: number      // rule groups due by the end of today (learner's time zone)
   }
-  streak: number          // days in a row with a finished round; today without a round yet does not break it
+  streak: number          // days in a row with a finished round that has at least one answer; today without one yet does not break it
   ruleGroups: RuleGroupProgress[] // weakest first
 }
 
@@ -231,6 +231,7 @@ Signed in = needs the `session` cookie. CSRF = needs `X-CSRF-Token`.
 - Answers may be kana or kanji; surrounding spaces and a trailing `。` are ignored. For compounds, each part may be kanji or kana (持ってこない, もって来ない). Katakana and romaji are wrong, so convert romaji before sending.
 - In `EXAM` mode send the chosen option as `answer`.
 - Each item can be answered once: a second answer is `409 This item is already answered`.
+- If the admin changed the verb so it no longer has the form, answering is `409 This verb was changed during the round; skip this item`. Move on to the next item; it is left out of the summary's mistakes.
 - `finish` may be called with unanswered items; they count in `total`, not in `answered`. Calling it again returns the same summary. Answering after finishing is `409 This round is finished`.
 - Contrast rounds come in pairs: items at positions 0+1, 2+3, … are the same verb in two commonly confused forms (potential/passive, te/past, ba/potential + ba).
 - Starting a round can fail with `400`:

@@ -17,7 +17,11 @@ export class ProgressService {
       // shortcut: reads every finished round; fine for years of daily practice, move the
       // date grouping into SQL if it ever gets slow.
       this.prisma.drillRound.findMany({
-        where: { userId, finishedAt: { not: null } },
+        where: {
+          userId,
+          finishedAt: { not: null },
+          items: { some: { attempt: { isNot: null } } },
+        },
         select: { finishedAt: true },
       }),
     ])

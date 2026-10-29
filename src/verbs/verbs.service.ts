@@ -1,22 +1,12 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common'
-import { Prisma } from '../../generated/prisma/client'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { ConjugationError } from '../conjugation'
+import { onDuplicate } from '../prisma/on-duplicate'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateVerbDto } from './dto/create-verb.dto'
 import { UpdateVerbDto } from './dto/update-verb.dto'
-import { checkVerb } from './verb-check'
+import { prepareVerb } from './verb-check'
 
-const conflict = (error: unknown) => {
-  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-    throw new ConflictException('This verb already exists')
-  }
-  throw error
-}
+const conflict = onDuplicate('This verb already exists')
 
 @Injectable()
 export class VerbsService {
@@ -68,10 +58,11 @@ export class VerbsService {
       existing._count.compounds > 0 &&
       (merged.dictionaryForm !== existing.dictionaryForm ||
         merged.reading !== existing.reading ||
-        merged.verbClass !== existing.verbClass)
+        merged.verbClass !== existing.verbClass ||
+        merged.baseVerbId)
     ) {
       throw new BadRequestException(
-        'Compound verbs are built on this verb, so its form, reading and class cannot change',
+        'Compound verbs are built on this verb, so it cannot change its form, reading or class, or become a compound itself',
       )
     }
 
@@ -87,19 +78,8 @@ export class VerbsService {
     if (input.baseVerbId && !base) {
       throw new BadRequestException('Base verb not found')
     }
-    const verbClass = base?.verbClass ?? input.verbClass
-    if (!verbClass) {
-      throw new BadRequestException('verbClass is required')
-    }
-
-    const data = {
-      ...input,
-      verbClass,
-      excludedForms: input.excludedForms ?? [],
-      baseVerbId: base?.id ?? null,
-    }
     try {
-      return { data, warnings: checkVerb(data, base ?? undefined) }
+      return prepareVerb(input, base ?? undefined)
     } catch (error) {
       if (error instanceof ConjugationError) {
         throw new BadRequestException(error.message)
