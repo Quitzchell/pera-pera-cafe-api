@@ -8,7 +8,7 @@ build:
 
 .PHONY: rebuild
 rebuild:
-	docker compose up -d --build
+	docker compose up -d --build --renew-anon-volumes
 
 .PHONY: down
 down:
