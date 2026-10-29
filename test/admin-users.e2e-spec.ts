@@ -13,7 +13,7 @@ describe('Admin users (e2e)', () => {
   beforeEach(async () => {
     t = await createApp()
     adminId = (await createUser(t, { email: 'admin@example.com', role: Role.ADMIN })).id
-    admin = await signIn(t, 'admin@example.com')
+    admin = await signIn(t, 'admin')
   })
 
   afterEach(async () => {
@@ -25,9 +25,10 @@ describe('Admin users (e2e)', () => {
       .http()
       .post('/api/admin/users')
       .set(admin)
-      .send({ email: 'New@Example.com', displayName: 'New Learner' })
+      .send({ username: 'New-Learner', email: 'New@Example.com' })
       .expect(201)
     expect(body.user).toMatchObject({
+      username: 'new-learner',
       email: 'new@example.com',
       status: 'INVITED',
       role: 'LEARNER',
@@ -56,17 +57,33 @@ describe('Admin users (e2e)', () => {
         message: 'This link is invalid or has expired',
       })
 
-    const learner = await signIn(t, 'new@example.com', NEW_PASSWORD)
+    const learner = await signIn(t, 'new-learner', NEW_PASSWORD)
     const me = await t.http().get('/api/auth/me').set(learner).expect(200)
-    expect(me.body).toMatchObject({ email: 'new@example.com', status: 'ACTIVE' })
+    expect(me.body).toMatchObject({ username: 'new-learner', status: 'ACTIVE' })
+    expect(me.body).not.toHaveProperty('email')
   })
+
+  it.each(['ab', 'has space', 'émile', 'a'.repeat(31)])(
+    'rejects the username %p',
+    async (username) => {
+      await t
+        .http()
+        .post('/api/admin/users')
+        .set(admin)
+        .send({ username, email: 'new@example.com' })
+        .expect(400)
+        .expect((res) =>
+          expect(res.body.message).toEqual(['username must be 3-30 characters: a-z, 0-9, _ or -']),
+        )
+    },
+  )
 
   it('rejects an expired invite and a reset token used as invite', async () => {
     const { body } = await t
       .http()
       .post('/api/admin/users')
       .set(admin)
-      .send({ email: 'new@example.com', displayName: 'New' })
+      .send({ username: 'new', email: 'new@example.com' })
       .expect(201)
     await t.prisma.authToken.updateMany({ data: { expiresAt: new Date(Date.now() - 1000) } })
 
@@ -89,19 +106,25 @@ describe('Admin users (e2e)', () => {
       .expect(400)
   })
 
-  it('rejects a duplicate email with 409', async () => {
+  it('rejects a duplicate username or email with 409', async () => {
     await createUser(t, { email: 'learner@example.com' })
     await t
       .http()
       .post('/api/admin/users')
       .set(admin)
-      .send({ email: 'LEARNER@example.com', displayName: 'Again' })
+      .send({ username: 'again', email: 'LEARNER@example.com' })
+      .expect(409)
+    await t
+      .http()
+      .post('/api/admin/users')
+      .set(admin)
+      .send({ username: 'Learner', email: 'other@example.com' })
       .expect(409)
   })
 
   it('resets a password, ending the old sessions', async () => {
     const learner = await createUser(t, { email: 'learner@example.com' })
-    const oldSession = await signIn(t, 'learner@example.com')
+    const oldSession = await signIn(t, 'learner')
 
     const { body } = await t
       .http()
@@ -120,9 +143,9 @@ describe('Admin users (e2e)', () => {
     await t
       .http()
       .post('/api/auth/login')
-      .send({ email: 'learner@example.com', password: PASSWORD })
+      .send({ username: 'learner', password: PASSWORD })
       .expect(401)
-    await signIn(t, 'learner@example.com', NEW_PASSWORD)
+    await signIn(t, 'learner', NEW_PASSWORD)
   })
 
   it('gives an invited user a fresh invite instead of a reset link', async () => {
@@ -141,7 +164,7 @@ describe('Admin users (e2e)', () => {
 
   it('disables a user for good: re-enabling does not revive old sessions', async () => {
     const learner = await createUser(t, { email: 'learner@example.com' })
-    const session = await signIn(t, 'learner@example.com')
+    const session = await signIn(t, 'learner')
 
     const disabled = await t
       .http()
@@ -157,9 +180,9 @@ describe('Admin users (e2e)', () => {
       .http()
       .patch(`/api/admin/users/${learner.id}`)
       .set(admin)
-      .send({ disabled: false, displayName: 'Renamed' })
+      .send({ disabled: false, username: 'renamed' })
       .expect(200)
-    expect(enabled.body).toMatchObject({ status: 'ACTIVE', displayName: 'Renamed' })
+    expect(enabled.body).toMatchObject({ status: 'ACTIVE', username: 'renamed' })
     await t.http().get('/api/auth/me').set(session).expect(401)
   })
 
@@ -189,7 +212,7 @@ describe('Admin users (e2e)', () => {
 
   it('keeps learners out of admin routes', async () => {
     const learner = await createUser(t, { email: 'learner@example.com' })
-    const headers = await signIn(t, 'learner@example.com')
+    const headers = await signIn(t, 'learner')
 
     await t
       .http()

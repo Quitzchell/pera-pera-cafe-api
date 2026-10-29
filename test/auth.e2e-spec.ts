@@ -18,32 +18,33 @@ describe('Auth (e2e)', () => {
     const response = await t
       .http()
       .post('/api/auth/login')
-      .send({ email: 'Learner@Example.com', password: PASSWORD })
+      .send({ username: 'Learner', password: PASSWORD })
       .expect(200)
 
     expect(response.get('Set-Cookie')?.[0]).toMatch(
       /^session=.+; Path=\/; Expires=.+; HttpOnly; SameSite=Lax$/,
     )
     expect(response.body).toEqual({
-      user: expect.objectContaining({ email: 'learner@example.com', role: 'LEARNER' }),
+      user: expect.objectContaining({ username: 'learner', role: 'LEARNER' }),
       csrfToken: expect.any(String),
     })
     expect(response.body.user).not.toHaveProperty('passwordHash')
+    expect(response.body.user).not.toHaveProperty('email')
   })
 
-  it('returns the same 401 for a wrong password and an unknown email', async () => {
+  it('returns the same 401 for a wrong password and an unknown username', async () => {
     await createUser(t, { email: 'learner@example.com' })
-    const body = { statusCode: 401, error: 'Unauthorized', message: 'Invalid email or password' }
+    const body = { statusCode: 401, error: 'Unauthorized', message: 'Invalid username or password' }
 
     await t
       .http()
       .post('/api/auth/login')
-      .send({ email: 'learner@example.com', password: 'wrong password!' })
+      .send({ username: 'learner', password: 'wrong password!' })
       .expect(401, body)
     await t
       .http()
       .post('/api/auth/login')
-      .send({ email: 'nobody@example.com', password: PASSWORD })
+      .send({ username: 'nobody', password: PASSWORD })
       .expect(401, body)
   })
 
@@ -52,14 +53,14 @@ describe('Auth (e2e)', () => {
     expect(response.body).toEqual({
       statusCode: 400,
       error: 'Bad Request',
-      message: expect.arrayContaining(['email must be an email']),
+      message: expect.arrayContaining(['username should not be empty']),
     })
   })
 
   it('locks the account after 5 failed attempts, even for the right password', async () => {
     await createUser(t, { email: 'learner@example.com' })
     const login = (password: string) =>
-      t.http().post('/api/auth/login').send({ email: 'learner@example.com', password })
+      t.http().post('/api/auth/login').send({ username: 'learner', password })
 
     for (let i = 0; i < 5; i++) {
       await login('wrong password!').expect(401)
@@ -78,13 +79,13 @@ describe('Auth (e2e)', () => {
       await t
         .http()
         .post('/api/auth/login')
-        .send({ email: `user${i}@example.com`, password: PASSWORD })
+        .send({ username: `user${i}`, password: PASSWORD })
         .expect(401)
     }
     const response = await t
       .http()
       .post('/api/auth/login')
-      .send({ email: 'user@example.com', password: PASSWORD })
+      .send({ username: 'user', password: PASSWORD })
       .expect(429)
     expect(response.body.error).toBe('Too Many Requests')
   })
@@ -98,7 +99,7 @@ describe('Auth (e2e)', () => {
 
   it('requires the CSRF token for state-changing requests', async () => {
     await createUser(t, { email: 'learner@example.com' })
-    const headers = await signIn(t, 'learner@example.com')
+    const headers = await signIn(t, 'learner')
 
     await t.http().post('/api/auth/logout').set('Cookie', headers.Cookie).expect(403)
     await t
@@ -116,7 +117,7 @@ describe('Auth (e2e)', () => {
 
   it('ends existing sessions of a disabled user and blocks sign-in', async () => {
     await createUser(t, { email: 'learner@example.com' })
-    const headers = await signIn(t, 'learner@example.com')
+    const headers = await signIn(t, 'learner')
     await t.http().get('/api/auth/me').set(headers).expect(200)
 
     await t.prisma.user.update({
@@ -128,13 +129,13 @@ describe('Auth (e2e)', () => {
     await t
       .http()
       .post('/api/auth/login')
-      .send({ email: 'learner@example.com', password: PASSWORD })
+      .send({ username: 'learner', password: PASSWORD })
       .expect(401)
   })
 
   it('rejects an expired session', async () => {
     await createUser(t, { email: 'learner@example.com' })
-    const headers = await signIn(t, 'learner@example.com')
+    const headers = await signIn(t, 'learner')
     await t.prisma.authSession.updateMany({ data: { expiresAt: new Date(Date.now() - 1000) } })
 
     await t.http().get('/api/auth/me').set(headers).expect(401)

@@ -111,15 +111,15 @@ Credentials come from the environment and are never stored in the repo:
 
 ```bash
 read -rs ADMIN_PASSWORD && export ADMIN_PASSWORD   # at least 12 characters; not echoed, not in shell history
-docker compose run --rm --no-deps -e ADMIN_EMAIL=you@example.com -e ADMIN_PASSWORD app npm run create-admin
+docker compose run --rm --no-deps -e ADMIN_USERNAME=admin -e ADMIN_EMAIL=you@example.com -e ADMIN_PASSWORD app npm run create-admin
 unset ADMIN_PASSWORD
 ```
 
-Optional: `ADMIN_NAME` (default `Admin`).
+You sign in with the username. Usernames are 3–30 characters (a–z, 0–9, `_`, `-`); the email is only kept so the admin knows who an account belongs to, and is never used to sign in.
 
 ### Invite a learner
 
-1. Sign in as admin in the frontend, go to **Users** and create a user (email and display name). Or use the API: `POST /api/admin/users`.
+1. Sign in as admin in the frontend, go to **Users** and create a user (username and email). Or use the API: `POST /api/admin/users`.
 2. Copy the invite link (valid for 7 days) and send it yourself; the app sends no e-mail.
 3. The learner opens the link and chooses a password; their account becomes active.
 4. If the learner forgets their password, use **Create reset link** (valid for 24 hours). For a learner who never accepted their invite, the same button creates a fresh invite.
@@ -143,7 +143,7 @@ The seed data is in [`prisma/seed-data/verbs.json`](prisma/seed-data/verbs.json)
 ### Maintenance commands
 
 ```bash
-npm run rebuild-progress -- learner@example.com   # rebuild RuleProgress from the Attempt log (or: -- --all)
+npm run rebuild-progress -- some-username   # rebuild RuleProgress from the Attempt log (or: -- --all)
 ```
 
 In the production image, run the compiled scripts instead: `node dist/src/cli/create-admin.js`, `node dist/src/cli/seed-verbs.js`, `node dist/src/cli/rebuild-progress.js`.
@@ -173,4 +173,4 @@ The production database still holds the old Pera Pera Cafe card-game tables, and
 2. Empty the `public` schema, so the old tables and the old `_prisma_migrations` rows are gone. Either `DROP SCHEMA public CASCADE; CREATE SCHEMA public;` as the database owner, or run `npx prisma migrate reset --force` once in a one-off app container.
 3. Deploy (the workflow applies the migrations).
 4. Seed the verbs once: `docker compose -f docker-compose.prod.yml run --rm app node dist/src/cli/seed-verbs.js`.
-5. Create the admin: `docker compose -f docker-compose.prod.yml run --rm -e ADMIN_EMAIL=you@example.com -e ADMIN_PASSWORD app node dist/src/cli/create-admin.js` (with `ADMIN_PASSWORD` exported as above).
+5. Create the admin: `docker compose -f docker-compose.prod.yml run --rm -e ADMIN_USERNAME=admin -e ADMIN_EMAIL=you@example.com -e ADMIN_PASSWORD app node dist/src/cli/create-admin.js` (with `ADMIN_PASSWORD` exported as above).
