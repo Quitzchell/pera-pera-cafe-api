@@ -24,6 +24,7 @@ jobs:
             cd /srv/pera-pera-cafe-api
             git checkout master
             git pull
-            docker compose -f docker-compose.prod.yml build
+            # --pull: without it Docker reuses the cached base image.
+            docker compose -f docker-compose.prod.yml build --pull
             docker compose -f docker-compose.prod.yml run --rm app npx --no-install prisma migrate deploy
             docker compose -f docker-compose.prod.yml up -d
