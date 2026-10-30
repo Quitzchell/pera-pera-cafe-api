@@ -12,68 +12,205 @@ datasource db {
   provider = "postgresql"
 }
 
-enum SessionStatus {
-  pending
-  active
-  ended
+enum Role {
+  ADMIN
+  LEARNER
 }
 
-model Session {
-  id           String         @id @default(cuid())
-  title        String
-  languages    String[]
-  join_code    String         @unique
-  status       SessionStatus  @default(pending)
-  created_at   DateTime       @default(now())
-  ended_at     DateTime?
-  participants Participant[]
-  events       SessionEvent[]
+enum UserStatus {
+  INVITED
+  ACTIVE
+  DISABLED
 }
 
-model Participant {
-  id                 String         @id @default(cuid())
-  session_id         String
-  session            Session        @relation(fields: [session_id], references: [id], onDelete: Cascade)
-  name               String
-  native_language    String
-  proficiency_levels String[]
-  is_host            Boolean        @default(false)
-  joined_at          DateTime       @default(now())
-  left_at            DateTime?
-  events_triggered   SessionEvent[]
-
-  @@index([session_id])
+enum AuthTokenType {
+  INVITE
+  PASSWORD_RESET
 }
 
-model Card {
-  id                String            @id
-  question          String
-  proficiency_level String
-  created_at        DateTime          @default(now())
-  translations      CardTranslation[]
+model User {
+  id               String         @id @default(cuid())
+  email            String         @unique
+  // Public name and login; lowercase a-z, 0-9, _ and -. The email is for the admin only.
+  username         String         @unique
+  passwordHash     String?
+  role             Role           @default(LEARNER)
+  status           UserStatus     @default(INVITED)
+  failedLoginCount Int            @default(0)
+  lockedUntil      DateTime?
+  createdAt        DateTime       @default(now())
+  lastActiveAt     DateTime?
+  tokens           AuthToken[]
+  sessions         AuthSession[]
+  settings         UserSettings?
+  rounds           DrillRound[]
+  attempts         Attempt[]
+  ruleProgress     RuleProgress[]
 }
 
-model CardTranslation {
-  id           String  @id @default(cuid())
-  card_id      String
-  card         Card    @relation(fields: [card_id], references: [id], onDelete: Cascade)
-  language     String
-  translation  String
-  romanization String?
+model AuthToken {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      AuthTokenType
+  tokenHash String        @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
 
-  @@unique([card_id, language])
-  @@index([card_id])
+  @@index([userId])
 }
 
-model SessionEvent {
-  id         String       @id @default(cuid())
-  session_id String
-  session    Session      @relation(fields: [session_id], references: [id], onDelete: Cascade)
-  type       String
-  payload    Json         @default("{}")
-  actor_id   String?
-  actor      Participant? @relation(fields: [actor_id], references: [id], onDelete: SetNull)
-  created_at DateTime     @default(now())
+model AuthSession {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  csrfToken String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 
-  @@index([session_id, created_at])
+  @@index([userId])
+}
+
+enum VerbClass {
+  GODAN
+  ICHIDAN
+  IRREGULAR
+}
+
+enum JlptLevel {
+  N5
+  N4
+  N3
+}
+
+enum ConjugationForm {
+  POLITE
+  POLITE_NEGATIVE
+  POLITE_PAST
+  NEGATIVE
+  PAST_NEGATIVE
+  TE
+  PAST
+  POTENTIAL
+  PASSIVE
+  CAUSATIVE
+  CAUSATIVE_PASSIVE
+  VOLITIONAL
+  CONDITIONAL_BA
+  IMPERATIVE
+  PROHIBITIVE
+  POTENTIAL_CONDITIONAL
+}
+
+model Verb {
+  id             String            @id @default(cuid())
+  dictionaryForm String
+  reading        String
+  meaning        String
+  verbClass      VerbClass
+  jlptLevel      JlptLevel
+  isActive       Boolean           @default(true)
+  // Forms the rules produce but nobody uses, e.g. 分かる has no potential.
+  excludedForms  ConjugationForm[] @default([])
+  // Set on compounds such as 勉強する: the base verb is conjugated, the rest is the prefix.
+  baseVerbId     String?
+  baseVerb       Verb?             @relation("Compound", fields: [baseVerbId], references: [id], onDelete: Restrict)
+  compounds      Verb[]            @relation("Compound")
+  drillItems     DrillItem[]
+  attempts       Attempt[]
+  createdAt      DateTime          @default(now())
+
+  @@unique([dictionaryForm, reading])
+}
+
+enum RuleGroup {
+  GODAN_U_TSU_RU
+  GODAN_MU_BU_NU
+  GODAN_KU
+  GODAN_GU
+  GODAN_SU
+  ICHIDAN
+  IRREGULAR_SURU
+  IRREGULAR_KURU
+  EXCEPTION_IKU
+  EXCEPTION_ARU
+}
+
+enum DrillMode {
+  STANDARD
+  CONTRAST
+  EXAM
+}
+
+model UserSettings {
+  userId       String            @id
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabledForms ConjugationForm[]
+  jlptLevels   JlptLevel[]
+  roundSize    Int               @default(20)
+  romajiInput  Boolean           @default(false)
+  showFurigana Boolean           @default(true)
+  // IANA name such as Europe/Amsterdam; decides which day a finished round counts for.
+  timeZone     String            @default("UTC")
+}
+
+model DrillRound {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mode       DrillMode
+  startedAt  DateTime    @default(now())
+  finishedAt DateTime?
+  items      DrillItem[]
+
+  @@index([userId, finishedAt])
+}
+
+model DrillItem {
+  id       String          @id @default(cuid())
+  roundId  String
+  round    DrillRound      @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  verbId   String
+  verb     Verb            @relation(fields: [verbId], references: [id], onDelete: Restrict)
+  form     ConjugationForm
+  position Int
+  // Multiple-choice options, EXAM mode only.
+  choices  String[]        @default([])
+  attempt  Attempt?
+
+  @@unique([roundId, position])
+}
+
+// Append-only: RuleProgress is a projection of this log.
+model Attempt {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  drillItemId String          @unique
+  drillItem   DrillItem       @relation(fields: [drillItemId], references: [id], onDelete: Cascade)
+  verbId      String
+  verb        Verb            @relation(fields: [verbId], references: [id], onDelete: Restrict)
+  form        ConjugationForm
+  ruleGroup   RuleGroup
+  answer      String
+  isCorrect   Boolean
+  createdAt   DateTime        @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model RuleProgress {
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  form            ConjugationForm
+  ruleGroup       RuleGroup
+  box             Int
+  dueAt           DateTime
+  attemptCount    Int
+  correctCount    Int
+  lastPracticedAt DateTime
+
+  @@id([userId, form, ruleGroup])
 }
