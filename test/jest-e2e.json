@@ -8,5 +8,7 @@
   },
   "moduleNameMapper": {
     "^(\\.{1,2}/.*)\\.js$": "$1"
-  }
+  },
+  "globalSetup": "<rootDir>/global-setup.ts",
+  "setupFiles": ["<rootDir>/test-env.ts"]
 }
