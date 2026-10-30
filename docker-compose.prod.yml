@@ -8,7 +8,9 @@ services:
     environment:
       DATABASE_URL: postgresql://${PERA_DB_USER:?required}:${PERA_DB_PASSWORD:?required}@postgres:5432/${PERA_DB_NAME:?required}?schema=public
       NODE_ENV: production
-      CORS_ORIGIN: ${CORS_ORIGIN:?required}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:?required}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      TRUST_PROXY: ${TRUST_PROXY:-1}
     networks:
       - web
       - postgres-net
