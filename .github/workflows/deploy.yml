@@ -22,8 +22,10 @@ jobs:
           script: |
             set -euo pipefail
             cd "${{ secrets.VPS_APP_DIR }}"
+            # reset instead of pull: also works after a force-push to master.
+            git fetch origin master
             git checkout master
-            git pull
+            git reset --hard origin/master
             # --pull: without it Docker reuses the cached base image.
             docker compose -f docker-compose.prod.yml build --pull
             docker compose -f docker-compose.prod.yml run --rm app npx --no-install prisma migrate deploy
