@@ -114,17 +114,14 @@ describe('Admin users (e2e)', () => {
     })
   })
 
-  it('stores no email, and ignores one sent by an older frontend', async () => {
-    const { body } = await t
+  it('rejects an email field: the app stores no email addresses', async () => {
+    await t
       .http()
       .post('/api/admin/users')
       .set(admin)
       .send({ username: 'legacy', email: 'legacy@example.com' })
-      .expect(201)
-    expect(body.user).not.toHaveProperty('email')
-
-    const { body: list } = await t.http().get('/api/admin/users').set(admin).expect(200)
-    expect(JSON.stringify(list)).not.toContain('@')
+      .expect(400)
+      .expect((res) => expect(res.body.message).toEqual(['property email should not exist']))
   })
 
   it('resets a password, ending the old sessions', async () => {
