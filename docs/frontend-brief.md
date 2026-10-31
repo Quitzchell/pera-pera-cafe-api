@@ -392,15 +392,18 @@ This is the core of the app; get it exactly right.
 
 ## 8. Labels for forms and rule groups
 
+
+Forms with a polite counterpart in the app are labelled "casual" (casual negative, casual past, casual past negative), so learners can tell them apart from the polite ones.
+
 | `ConjugationForm` | Label | Example (書く) |
 |---|---|---|
 | `POLITE` | polite (ます形) | 書きます |
 | `POLITE_NEGATIVE` | polite negative | 書きません |
 | `POLITE_PAST` | polite past | 書きました |
-| `NEGATIVE` | negative (ない形) | 書かない |
-| `PAST_NEGATIVE` | past negative | 書かなかった |
+| `NEGATIVE` | casual negative (ない形) | 書かない |
+| `PAST_NEGATIVE` | casual past negative | 書かなかった |
 | `TE` | te-form (て形) | 書いて |
-| `PAST` | past (た形) | 書いた |
+| `PAST` | casual past (た形) | 書いた |
 | `POTENTIAL` | potential (可能形) | 書ける |
 | `PASSIVE` | passive (受身形) | 書かれる |
 | `CAUSATIVE` | causative (使役形) | 書かせる |
