@@ -16,7 +16,7 @@ describe('Drill (e2e)', () => {
   beforeEach(async () => {
     t = await createApp()
     await seedVerbs(t.prisma)
-    await createUser(t, { email: 'learner@example.com' })
+    await createUser(t, { username: 'learner' })
     learner = await signIn(t, 'learner')
   })
 
@@ -114,7 +114,7 @@ describe('Drill (e2e)', () => {
     await answer(learner, round.id, first.id, right.kana).expect(409)
 
     const { id: userId } = await t.prisma.user.findUniqueOrThrow({
-      where: { email: 'learner@example.com' },
+      where: { username: 'learner' },
     })
     const live = await t.prisma.ruleProgress.findMany({
       where: { userId },
@@ -143,7 +143,7 @@ describe('Drill (e2e)', () => {
 
   it('keeps other learners out of a round', async () => {
     const { body: round } = await startRound('STANDARD').expect(201)
-    await createUser(t, { email: 'other@example.com' })
+    await createUser(t, { username: 'other' })
     const other = await signIn(t, 'other')
 
     await answer(other, round.id, round.items[0].id, 'x').expect(404, {
@@ -210,7 +210,7 @@ describe('Drill (e2e)', () => {
 
     await answer(learner, round.id, other.id, (await expectedAnswer(t.prisma, other.id)).kana)
     await retry(learner, other.id, 'x').expect(409)
-    await createUser(t, { email: 'other@example.com' })
+    await createUser(t, { username: 'other' })
     await retry(await signIn(t, 'other'), missed.id, right.kana).expect(404)
 
     expect(await t.prisma.attempt.count()).toBe(2)
@@ -242,7 +242,7 @@ describe('Drill (e2e)', () => {
     )
 
     const { id: userId } = await t.prisma.user.findUniqueOrThrow({
-      where: { email: 'learner@example.com' },
+      where: { username: 'learner' },
     })
     const order = [{ form: 'asc' as const }, { ruleGroup: 'asc' as const }]
     const live = await t.prisma.ruleProgress.findMany({ where: { userId }, orderBy: order })

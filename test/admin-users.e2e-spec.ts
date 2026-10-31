@@ -12,7 +12,7 @@ describe('Admin users (e2e)', () => {
 
   beforeEach(async () => {
     t = await createApp()
-    adminId = (await createUser(t, { email: 'admin@example.com', role: Role.ADMIN })).id
+    adminId = (await createUser(t, { username: 'admin', role: Role.ADMIN })).id
     admin = await signIn(t, 'admin')
   })
 
@@ -25,11 +25,10 @@ describe('Admin users (e2e)', () => {
       .http()
       .post('/api/admin/users')
       .set(admin)
-      .send({ username: 'New-Learner', email: 'New@Example.com' })
+      .send({ username: 'New-Learner' })
       .expect(201)
     expect(body.user).toMatchObject({
       username: 'new-learner',
-      email: 'new@example.com',
       status: 'INVITED',
       role: 'LEARNER',
     })
@@ -70,7 +69,7 @@ describe('Admin users (e2e)', () => {
         .http()
         .post('/api/admin/users')
         .set(admin)
-        .send({ username, email: 'new@example.com' })
+        .send({ username })
         .expect(400)
         .expect((res) =>
           expect(res.body.message).toEqual(['username must be 3-30 characters: a-z, 0-9, _ or -']),
@@ -83,7 +82,7 @@ describe('Admin users (e2e)', () => {
       .http()
       .post('/api/admin/users')
       .set(admin)
-      .send({ username: 'new', email: 'new@example.com' })
+      .send({ username: 'new' })
       .expect(201)
     await t.prisma.authToken.updateMany({ data: { expiresAt: new Date(Date.now() - 1000) } })
 
@@ -93,7 +92,7 @@ describe('Admin users (e2e)', () => {
       .send({ token: tokenFrom(body.link), password: NEW_PASSWORD })
       .expect(400)
 
-    const learner = await createUser(t, { email: 'learner@example.com' })
+    const learner = await createUser(t, { username: 'learner' })
     const reset = await t
       .http()
       .post(`/api/admin/users/${learner.id}/reset-link`)
@@ -106,24 +105,30 @@ describe('Admin users (e2e)', () => {
       .expect(400)
   })
 
-  it('rejects a duplicate username or email with 409', async () => {
-    await createUser(t, { email: 'learner@example.com' })
-    await t
+  it('rejects a duplicate username with 409', async () => {
+    await createUser(t, { username: 'learner' })
+    await t.http().post('/api/admin/users').set(admin).send({ username: 'Learner' }).expect(409, {
+      statusCode: 409,
+      error: 'Conflict',
+      message: 'A user with this username already exists',
+    })
+  })
+
+  it('stores no email, and ignores one sent by an older frontend', async () => {
+    const { body } = await t
       .http()
       .post('/api/admin/users')
       .set(admin)
-      .send({ username: 'again', email: 'LEARNER@example.com' })
-      .expect(409)
-    await t
-      .http()
-      .post('/api/admin/users')
-      .set(admin)
-      .send({ username: 'Learner', email: 'other@example.com' })
-      .expect(409)
+      .send({ username: 'legacy', email: 'legacy@example.com' })
+      .expect(201)
+    expect(body.user).not.toHaveProperty('email')
+
+    const { body: list } = await t.http().get('/api/admin/users').set(admin).expect(200)
+    expect(JSON.stringify(list)).not.toContain('@')
   })
 
   it('resets a password, ending the old sessions', async () => {
-    const learner = await createUser(t, { email: 'learner@example.com' })
+    const learner = await createUser(t, { username: 'learner' })
     const oldSession = await signIn(t, 'learner')
 
     const { body } = await t
@@ -150,7 +155,7 @@ describe('Admin users (e2e)', () => {
 
   it('gives an invited user a fresh invite instead of a reset link', async () => {
     const invited = await createUser(t, {
-      email: 'invited@example.com',
+      username: 'invited',
       passwordHash: null,
       status: UserStatus.INVITED,
     })
@@ -163,7 +168,7 @@ describe('Admin users (e2e)', () => {
   })
 
   it('disables a user for good: re-enabling does not revive old sessions', async () => {
-    const learner = await createUser(t, { email: 'learner@example.com' })
+    const learner = await createUser(t, { username: 'learner' })
     const session = await signIn(t, 'learner')
 
     const disabled = await t
@@ -187,7 +192,7 @@ describe('Admin users (e2e)', () => {
   })
 
   it('invalidates unused links when a user is disabled', async () => {
-    const learner = await createUser(t, { email: 'learner@example.com' })
+    const learner = await createUser(t, { username: 'learner' })
     const { body } = await t
       .http()
       .post(`/api/admin/users/${learner.id}/reset-link`)
@@ -206,19 +211,19 @@ describe('Admin users (e2e)', () => {
   })
 
   it('rejects null for fields that cannot be empty', async () => {
-    const learner = await createUser(t, { email: 'learner@example.com' })
+    const learner = await createUser(t, { username: 'learner' })
     for (const body of [{ username: null }, { disabled: null }]) {
       await t.http().patch(`/api/admin/users/${learner.id}`).set(admin).send(body).expect(400)
     }
   })
 
   it('lists users without secrets and deletes a user', async () => {
-    const learner = await createUser(t, { email: 'learner@example.com' })
+    const learner = await createUser(t, { username: 'learner' })
 
     const { body } = await t.http().get('/api/admin/users').set(admin).expect(200)
     expect(body).toEqual([
-      expect.objectContaining({ email: 'admin@example.com' }),
-      expect.objectContaining({ email: 'learner@example.com' }),
+      expect.objectContaining({ username: 'admin' }),
+      expect.objectContaining({ username: 'learner' }),
     ])
     expect(body[0]).not.toHaveProperty('passwordHash')
 
@@ -237,7 +242,7 @@ describe('Admin users (e2e)', () => {
   })
 
   it('keeps learners out of admin routes', async () => {
-    const learner = await createUser(t, { email: 'learner@example.com' })
+    const learner = await createUser(t, { username: 'learner' })
     const headers = await signIn(t, 'learner')
 
     await t
