@@ -27,11 +27,10 @@ export type TestApp = Awaited<ReturnType<typeof createApp>>
 
 export async function createUser(
   { prisma }: TestApp,
-  data: Partial<Prisma.UserCreateInput> & { email: string },
+  data: Partial<Prisma.UserCreateInput> & { username: string },
 ) {
   return prisma.user.create({
     data: {
-      username: data.email.split('@')[0],
       passwordHash: await (passwordHash ??= hashPassword(PASSWORD)),
       role: Role.LEARNER,
       status: UserStatus.ACTIVE,

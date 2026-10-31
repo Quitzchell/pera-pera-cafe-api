@@ -2,16 +2,15 @@ import { Role, UserStatus } from '../../generated/prisma/client'
 import {
   hashPassword,
   MIN_PASSWORD_LENGTH,
-  normalizeEmail,
   normalizeUsername,
   USERNAME_PATTERN,
 } from '../auth/credentials'
 import { PrismaService } from '../prisma/prisma.service'
 
 async function main() {
-  const { ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD } = process.env
-  if (!ADMIN_USERNAME || !ADMIN_EMAIL || !ADMIN_PASSWORD) {
-    throw new Error('Set ADMIN_USERNAME, ADMIN_EMAIL and ADMIN_PASSWORD')
+  const { ADMIN_USERNAME, ADMIN_PASSWORD } = process.env
+  if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+    throw new Error('Set ADMIN_USERNAME and ADMIN_PASSWORD')
   }
   const username = normalizeUsername(ADMIN_USERNAME)
   if (!USERNAME_PATTERN.test(username)) {
@@ -26,7 +25,6 @@ async function main() {
     await prisma.user.create({
       data: {
         username,
-        email: normalizeEmail(ADMIN_EMAIL),
         passwordHash: await hashPassword(ADMIN_PASSWORD),
         role: Role.ADMIN,
         status: UserStatus.ACTIVE,

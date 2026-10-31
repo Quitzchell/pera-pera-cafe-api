@@ -30,8 +30,7 @@ enum AuthTokenType {
 
 model User {
   id               String         @id @default(cuid())
-  email            String         @unique
-  // Public name and login; lowercase a-z, 0-9, _ and -. The email is for the admin only.
+  // Public name and login; lowercase a-z, 0-9, _ and -. No email is stored.
   username         String         @unique
   passwordHash     String?
   role             Role           @default(LEARNER)
