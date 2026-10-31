@@ -7,6 +7,7 @@ import {
   currentStreak,
   exportRow,
   localDate,
+  RecentMistake,
   RuleGroupStats,
   weakestFirst,
 } from './progress-stats'
@@ -56,21 +57,9 @@ export class ProgressService {
   }
 
   async exportJson(userId: string) {
-    const [summary, mistakes] = await Promise.all([
+    const [summary, recentMistakes] = await Promise.all([
       this.summary(userId),
-      this.prisma.attempt.findMany({
-        where: { userId, isCorrect: false },
-        orderBy: { createdAt: 'desc' },
-        take: RECENT_MISTAKES,
-        select: {
-          createdAt: true,
-          form: true,
-          ruleGroup: true,
-          answer: true,
-          drillItem: { select: { round: { select: { mode: true } } } },
-          verb: { include: { baseVerb: true } },
-        },
-      }),
+      this.recentMistakes(userId),
     ])
     return {
       exportedAt: new Date(),
@@ -81,19 +70,36 @@ export class ProgressService {
         streak: summary.streak,
       },
       ruleProgress: summary.ruleGroups.map(exportRow),
-      recentMistakes: mistakes.map(({ createdAt, form, ruleGroup, answer, drillItem, verb }) => {
-        const expected = conjugateIfPossible(verb, form)
-        return {
-          createdAt,
-          mode: drillItem.round.mode,
-          verb: { dictionaryForm: verb.dictionaryForm, reading: verb.reading },
-          form,
-          ruleGroup,
-          expected: expected && { kanji: expected.kanji, kana: expected.kana },
-          answer,
-        }
-      }),
+      recentMistakes,
     }
+  }
+
+  async recentMistakes(userId: string): Promise<RecentMistake[]> {
+    const mistakes = await this.prisma.attempt.findMany({
+      where: { userId, isCorrect: false },
+      orderBy: { createdAt: 'desc' },
+      take: RECENT_MISTAKES,
+      select: {
+        createdAt: true,
+        form: true,
+        ruleGroup: true,
+        answer: true,
+        drillItem: { select: { round: { select: { mode: true } } } },
+        verb: { include: { baseVerb: true } },
+      },
+    })
+    return mistakes.map(({ createdAt, form, ruleGroup, answer, drillItem, verb }) => {
+      const expected = conjugateIfPossible(verb, form)
+      return {
+        createdAt,
+        mode: drillItem.round.mode,
+        verb: { dictionaryForm: verb.dictionaryForm, reading: verb.reading },
+        form,
+        ruleGroup,
+        expected: expected && { kanji: expected.kanji, kana: expected.kana },
+        answer,
+      }
+    })
   }
 
   async ruleGroups(userId: string): Promise<RuleGroupStats[]> {

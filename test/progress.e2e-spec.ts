@@ -166,10 +166,37 @@ describe('Progress (e2e)', () => {
     expect(csv.get('Content-Type')).toMatch(/^text\/csv/)
     expect(csv.get('Content-Disposition')).toMatch(/^attachment; filename="?progress\.csv"?$/)
     const [header, ...lines] = csv.text.trim().split('\n')
-    expect(header).toBe('form,ruleGroup,attemptCount,accuracy,box,lastPracticedAt')
+    expect(header).toBe('form,ruleGroup,attemptCount,accuracy,box,lastPracticedAt,dueAt')
     expect(lines.length).toBeGreaterThan(0)
 
     await t.http().get('/api/progress/export?format=xml').set(learner).expect(400)
+  })
+
+  it('exports recent mistakes as a separate CSV file', async () => {
+    await playRound(learner)
+    const missed = await t.prisma.attempt.findFirstOrThrow({ where: { isCorrect: false } })
+    const expected = await expectedAnswer(t.prisma, missed.drillItemId)
+    const verb = await t.prisma.verb.findUniqueOrThrow({ where: { id: missed.verbId } })
+
+    const csv = await t.http().get('/api/progress/export/mistakes').set(learner).expect(200)
+    expect(csv.get('Content-Type')).toMatch(/^text\/csv/)
+    expect(csv.get('Content-Disposition')).toMatch(/^attachment; filename="?mistakes\.csv"?$/)
+    expect(csv.text.trim().split('\n')).toEqual([
+      'createdAt,mode,dictionaryForm,reading,form,ruleGroup,expectedKanji,expectedKana,answer',
+      [
+        missed.createdAt.toISOString(),
+        'STANDARD',
+        verb.dictionaryForm,
+        verb.reading,
+        missed.form,
+        missed.ruleGroup,
+        expected.kanji,
+        expected.kana,
+        'wrong',
+      ].join(','),
+    ])
+
+    await t.http().get('/api/progress/export/mistakes').expect(401)
   })
 
   it('exports totals, rule progress and recent mistakes as JSON', async () => {
