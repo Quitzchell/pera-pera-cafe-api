@@ -15,7 +15,7 @@ describe('Admin verbs (e2e)', () => {
 
   beforeEach(async () => {
     t = await createApp()
-    await createUser(t, { email: 'admin@example.com', role: Role.ADMIN })
+    await createUser(t, { username: 'admin', role: Role.ADMIN })
     admin = await signIn(t, 'admin')
   })
 
@@ -147,7 +147,7 @@ describe('Admin verbs (e2e)', () => {
   })
 
   it('keeps learners out', async () => {
-    await createUser(t, { email: 'learner@example.com' })
+    await createUser(t, { username: 'learner' })
     const learner = await signIn(t, 'learner')
     await t.http().get('/api/admin/verbs').set(learner).expect(403)
     await t.http().post('/api/admin/verbs').set(learner).send(kaeru).expect(403)

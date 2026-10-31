@@ -13,7 +13,6 @@ const FREE_FAILED_LOGINS = 4
 const MAX_LOGIN_WAIT = 15 * MINUTE
 const LAST_ACTIVE_RESOLUTION = 5 * MINUTE
 
-// What a user sees of their own account. The email is for the admin only.
 export const publicUserSelect = {
   id: true,
   username: true,
@@ -22,8 +21,6 @@ export const publicUserSelect = {
   createdAt: true,
   lastActiveAt: true,
 } satisfies Prisma.UserSelect
-
-export const adminUserSelect = { ...publicUserSelect, email: true } satisfies Prisma.UserSelect
 
 export type PublicUser = Prisma.UserGetPayload<{ select: typeof publicUserSelect }>
 
