@@ -393,7 +393,7 @@ This is the core of the app; get it exactly right.
 ## 8. Labels for forms and rule groups
 
 
-Forms with a polite counterpart in the app are labelled "casual" (casual negative, casual past, casual past negative), so learners can tell them apart from the polite ones.
+Plain forms with a polite counterpart are labelled "casual".
 
 | `ConjugationForm` | Label | Example (書く) |
 |---|---|---|
