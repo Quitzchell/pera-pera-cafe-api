@@ -3,7 +3,7 @@ import type { Response } from 'express'
 import { CurrentSession } from '../auth/auth.decorators'
 import type { SignedIn } from '../auth/auth.service'
 import { ExportQueryDto } from './dto/export-query.dto'
-import { exportRow, toCsv } from './progress-stats'
+import { toCsv } from './progress-stats'
 import { ProgressService } from './progress.service'
 
 @Controller('progress')
@@ -21,8 +21,9 @@ export class ProgressController {
     @Query() { format }: ExportQueryDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const rows = await this.progress.ruleGroups(session.user.id)
     response.attachment(`progress.${format}`)
-    return format === 'csv' ? toCsv(rows) : rows.map(exportRow)
+    return format === 'csv'
+      ? toCsv(await this.progress.ruleGroups(session.user.id))
+      : this.progress.exportJson(session.user.id)
   }
 }

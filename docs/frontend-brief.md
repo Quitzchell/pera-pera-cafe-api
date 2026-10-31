@@ -254,7 +254,40 @@ Signed in = needs the `session` cookie. CSRF = needs `X-CSRF-Token`.
 | `GET /progress/export?format=csv` | signed in | `200` file `progress.csv` |
 | `GET /progress/export?format=json` | signed in | `200` file `progress.json` |
 
-Export columns, one row per form + rule group: `form, ruleGroup, attemptCount, accuracy, box, lastPracticedAt`. The response has `Content-Disposition: attachment`, so a plain link (same site, cookie included) downloads it.
+Both responses have `Content-Disposition: attachment`, so a plain link (same site, cookie included) downloads them.
+
+- **CSV:** one row per form + rule group, with the columns `form, ruleGroup, attemptCount, accuracy, box, lastPracticedAt`.
+- **JSON:** one object:
+
+```ts
+interface ProgressExport {
+  exportedAt: string
+  totals: {
+    rounds: number        // finished rounds with at least one answer (same as /progress)
+    attempts: number
+    accuracy: number      // 0–1
+    streak: number
+  }
+  ruleProgress: {         // weakest first, like /progress
+    form: ConjugationForm
+    ruleGroup: RuleGroup
+    attemptCount: number
+    accuracy: number
+    box: number
+    lastPracticedAt: string
+    dueAt: string
+  }[]
+  recentMistakes: {       // the last 30 wrong first answers, newest first (retries are not stored)
+    createdAt: string
+    mode: DrillMode
+    verb: { dictionaryForm: string; reading: string }
+    form: ConjugationForm
+    ruleGroup: RuleGroup
+    expected: { kanji: string; kana: string } | null // null if the admin later changed the verb so it no longer has this form
+    answer: string
+  }[]
+}
+```
 
 ### Admin (role `ADMIN` only; others get `403 Admins only`)
 

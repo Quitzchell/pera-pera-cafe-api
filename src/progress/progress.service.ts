@@ -1,7 +1,17 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
 import { SettingsService } from '../settings/settings.service'
-import { accuracy, currentStreak, localDate, RuleGroupStats, weakestFirst } from './progress-stats'
+import { conjugateIfPossible } from '../verbs/verb-check'
+import {
+  accuracy,
+  currentStreak,
+  exportRow,
+  localDate,
+  RuleGroupStats,
+  weakestFirst,
+} from './progress-stats'
+
+const RECENT_MISTAKES = 30
 
 @Injectable()
 export class ProgressService {
@@ -42,6 +52,47 @@ export class ProgressService {
       },
       streak: currentStreak(roundDays, today),
       ruleGroups,
+    }
+  }
+
+  async exportJson(userId: string) {
+    const [summary, mistakes] = await Promise.all([
+      this.summary(userId),
+      this.prisma.attempt.findMany({
+        where: { userId, isCorrect: false },
+        orderBy: { createdAt: 'desc' },
+        take: RECENT_MISTAKES,
+        select: {
+          createdAt: true,
+          form: true,
+          ruleGroup: true,
+          answer: true,
+          drillItem: { select: { round: { select: { mode: true } } } },
+          verb: { include: { baseVerb: true } },
+        },
+      }),
+    ])
+    return {
+      exportedAt: new Date(),
+      totals: {
+        rounds: summary.totals.roundsFinished,
+        attempts: summary.totals.attempts,
+        accuracy: summary.totals.accuracy,
+        streak: summary.streak,
+      },
+      ruleProgress: summary.ruleGroups.map(exportRow),
+      recentMistakes: mistakes.map(({ createdAt, form, ruleGroup, answer, drillItem, verb }) => {
+        const expected = conjugateIfPossible(verb, form)
+        return {
+          createdAt,
+          mode: drillItem.round.mode,
+          verb: { dictionaryForm: verb.dictionaryForm, reading: verb.reading },
+          form,
+          ruleGroup,
+          expected: expected && { kanji: expected.kanji, kana: expected.kana },
+          answer,
+        }
+      }),
     }
   }
 
