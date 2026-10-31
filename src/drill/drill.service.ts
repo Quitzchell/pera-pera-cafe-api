@@ -9,7 +9,7 @@ import { conjugate, ConjugationError, ConjugationForm } from '../conjugation'
 import { onDuplicate } from '../prisma/on-duplicate'
 import { PrismaService } from '../prisma/prisma.service'
 import { SettingsService } from '../settings/settings.service'
-import { drillableForms, toConjugatable } from '../verbs/verb-check'
+import { conjugateIfPossible, drillableForms, toConjugatable } from '../verbs/verb-check'
 import { checkAnswer } from './answer-check'
 import { examChoices } from './exam-choices'
 import { applyAttempt } from './leitner'
@@ -177,7 +177,7 @@ export class DrillService {
     const mistakes = answered
       .filter((item) => !item.attempt!.isCorrect)
       .flatMap((item) => {
-        const conjugation = this.conjugateCurrent(item.verb, item.form)
+        const conjugation = conjugateIfPossible(item.verb, item.form)
         if (!conjugation) {
           return []
         }
@@ -212,17 +212,6 @@ export class DrillService {
     } catch (error) {
       if (error instanceof ConjugationError) {
         throw new ConflictException('This verb was changed during the round; skip this item')
-      }
-      throw error
-    }
-  }
-
-  private conjugateCurrent(verb: VerbWithBase, form: ConjugationForm) {
-    try {
-      return conjugate(engineVerb(verb), form)
-    } catch (error) {
-      if (error instanceof ConjugationError) {
-        return null
       }
       throw error
     }

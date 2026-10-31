@@ -59,5 +59,7 @@ export function toCsv(rows: RuleGroupStats[]): string {
   return [CSV_COLUMNS.join(','), ...lines].join('\n') + '\n'
 }
 
-export const exportRow = (row: RuleGroupStats) =>
-  Object.fromEntries(CSV_COLUMNS.map((column) => [column, row[column]]))
+export const exportRow = (row: RuleGroupStats) => ({
+  ...Object.fromEntries(CSV_COLUMNS.map((column) => [column, row[column]])),
+  dueAt: row.dueAt,
+})
