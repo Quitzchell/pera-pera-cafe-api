@@ -13,7 +13,7 @@ describe('Auth (e2e)', () => {
   })
 
   it('signs in with an httpOnly session cookie and returns a CSRF token', async () => {
-    await createUser(t, { email: 'learner@example.com' })
+    await createUser(t, { username: 'learner' })
 
     const response = await t
       .http()
@@ -33,7 +33,7 @@ describe('Auth (e2e)', () => {
   })
 
   it('returns the same 401 for a wrong password and an unknown username', async () => {
-    await createUser(t, { email: 'learner@example.com' })
+    await createUser(t, { username: 'learner' })
     const body = { statusCode: 401, error: 'Unauthorized', message: 'Invalid username or password' }
 
     await t
@@ -58,10 +58,10 @@ describe('Auth (e2e)', () => {
   })
 
   it('slows sign-in down after 5 failures with a wait that grows per failure', async () => {
-    await createUser(t, { email: 'learner@example.com' })
+    await createUser(t, { username: 'learner' })
     const login = (password: string) =>
       t.http().post('/api/auth/login').send({ username: 'learner', password })
-    const where = { email: 'learner@example.com' }
+    const where = { username: 'learner' }
     const waitMinutes = async () => {
       const { lockedUntil } = await t.prisma.user.findUniqueOrThrow({ where })
       return lockedUntil ? Math.round((lockedUntil.getTime() - Date.now()) / 60_000) : 0
@@ -94,10 +94,10 @@ describe('Auth (e2e)', () => {
   })
 
   it('caps the wait at 15 minutes', async () => {
-    await createUser(t, { email: 'learner@example.com', failedLoginCount: 30 })
+    await createUser(t, { username: 'learner', failedLoginCount: 30 })
     await t.http().post('/api/auth/login').send({ username: 'learner', password: 'nope' })
     const { lockedUntil } = await t.prisma.user.findUniqueOrThrow({
-      where: { email: 'learner@example.com' },
+      where: { username: 'learner' },
     })
     expect(Math.round((lockedUntil!.getTime() - Date.now()) / 60_000)).toBe(15)
   })
@@ -126,7 +126,7 @@ describe('Auth (e2e)', () => {
   })
 
   it('requires the CSRF token for state-changing requests', async () => {
-    await createUser(t, { email: 'learner@example.com' })
+    await createUser(t, { username: 'learner' })
     const headers = await signIn(t, 'learner')
 
     await t.http().post('/api/auth/logout').set('Cookie', headers.Cookie).expect(403)
@@ -144,12 +144,12 @@ describe('Auth (e2e)', () => {
   })
 
   it('ends existing sessions of a disabled user and blocks sign-in', async () => {
-    await createUser(t, { email: 'learner@example.com' })
+    await createUser(t, { username: 'learner' })
     const headers = await signIn(t, 'learner')
     await t.http().get('/api/auth/me').set(headers).expect(200)
 
     await t.prisma.user.update({
-      where: { email: 'learner@example.com' },
+      where: { username: 'learner' },
       data: { status: UserStatus.DISABLED },
     })
 
@@ -162,7 +162,7 @@ describe('Auth (e2e)', () => {
   })
 
   it('rejects an expired session', async () => {
-    await createUser(t, { email: 'learner@example.com' })
+    await createUser(t, { username: 'learner' })
     const headers = await signIn(t, 'learner')
     await t.prisma.authSession.updateMany({ data: { expiresAt: new Date(Date.now() - 1000) } })
 

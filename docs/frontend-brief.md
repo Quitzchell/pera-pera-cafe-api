@@ -60,7 +60,7 @@ Every error has the same JSON shape:
 | 401 | Not signed in (or session ended) | Go to sign in, then back to the page the user came from |
 | 403 | Signed in, not allowed (non-admin on admin routes, CSRF) | "Not allowed" page; for CSRF see above |
 | 404 | Not found, including another learner's round | Show not found |
-| 409 | Conflict: duplicate username, email or verb, item already answered, round finished | Show the message |
+| 409 | Conflict: duplicate username or verb, item already answered, round finished | Show the message |
 | 429 | Too many attempts (10 a minute per IP on login, accept-invite, reset-password) | "Too many attempts, try again in a minute" |
 | 5xx / network | Server or connection problem | Friendly retry message |
 
@@ -89,7 +89,7 @@ type RuleGroup =
   | 'ICHIDAN' | 'IRREGULAR_SURU' | 'IRREGULAR_KURU' | 'EXCEPTION_IKU' | 'EXCEPTION_ARU'
 
 // Users sign in with their username, which is also the only name shown in the app.
-// Usernames are 3–30 characters: lowercase a–z, 0–9, _ and -.
+// Usernames are 3–30 characters: lowercase a–z, 0–9, _ and -. No email is stored.
 interface User {
   id: string
   username: string
@@ -97,12 +97,6 @@ interface User {
   status: UserStatus
   createdAt: string
   lastActiveAt: string | null
-}
-
-// The email is for the admin only: it is returned by the admin user routes, never to the
-// user themselves, and never used to sign in.
-interface AdminUser extends User {
-  email: string
 }
 
 interface Settings {
@@ -266,9 +260,9 @@ Export columns, one row per form + rule group: `form, ruleGroup, attemptCount, a
 
 | Method and path | Body | Success |
 |---|---|---|
-| `GET /admin/users` | – | `200 AdminUser[]` (oldest first) |
-| `POST /admin/users` | `{ username, email }` | `201 { user: AdminUser, link: string, expiresAt: string }` |
-| `PATCH /admin/users/:id` | `{ username?, disabled?: boolean }` | `200 AdminUser` |
+| `GET /admin/users` | – | `200 User[]` (oldest first) |
+| `POST /admin/users` | `{ username }` | `201 { user: User, link: string, expiresAt: string }` |
+| `PATCH /admin/users/:id` | `{ username?, disabled?: boolean }` | `200 User` |
 | `DELETE /admin/users/:id` | – | `204` |
 | `POST /admin/users/:id/reset-link` | – | `201 { link: string, expiresAt: string }` |
 | `GET /admin/users/:id/progress` | – | `200 Progress` |
@@ -281,7 +275,8 @@ Export columns, one row per form + rule group: `form, ruleGroup, attemptCount, a
 - Disabling ends all of the user's sessions. Re-enabling restores `ACTIVE` (or `INVITED` if they never set a password).
 - The admin cannot disable or delete their own account (`400`).
 - Usernames are lowercased by the API (`New-Learner` becomes `new-learner`); anything outside 3–30 characters of a–z, 0–9, `_` and `-` is `400 username must be 3-30 characters: a-z, 0-9, _ or -`. Sign-in ignores case too.
-- Duplicate username or email: `409`.
+- Duplicate username: `409 A user with this username already exists`.
+- The app stores **no email addresses**. For now the API accepts and ignores an `email` field on `POST /admin/users`, so older frontends keep working; stop sending it.
 - Verb create body: `{ dictionaryForm, reading, meaning, jlptLevel, verbClass?, excludedForms?, isActive?, baseVerbId? }`.
   - `reading` in hiragana.
   - For a compound, send `baseVerbId` (e.g. the id of する) and leave out `verbClass`; `dictionaryForm` and `reading` must end in the base verb (勉強する / べんきょうする).
@@ -317,8 +312,8 @@ No sign-up page.
 
 ### Admin (only when `user.role === 'ADMIN'`)
 - **Users**:
-  - list with username, email, status and last active;
-  - create user (username + email), then show the invite link with a copy button and its expiry;
+  - list with username, status and last active;
+  - create user (username only), then show the invite link with a copy button and its expiry;
   - enable/disable;
   - delete after a confirmation dialog;
   - create a reset link (copy button and expiry);
