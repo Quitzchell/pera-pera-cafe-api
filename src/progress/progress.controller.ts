@@ -3,7 +3,13 @@ import type { Response } from 'express'
 import { CurrentSession } from '../auth/auth.decorators'
 import type { SignedIn } from '../auth/auth.service'
 import { ExportQueryDto } from './dto/export-query.dto'
-import { toCsv } from './progress-stats'
+import {
+  exportRow,
+  flattenMistake,
+  MISTAKE_COLUMNS,
+  RULE_PROGRESS_COLUMNS,
+  toCsv,
+} from './progress-stats'
 import { ProgressService } from './progress.service'
 
 @Controller('progress')
@@ -22,8 +28,20 @@ export class ProgressController {
     @Res({ passthrough: true }) response: Response,
   ) {
     response.attachment(`progress.${format}`)
-    return format === 'csv'
-      ? toCsv(await this.progress.ruleGroups(session.user.id))
-      : this.progress.exportJson(session.user.id)
+    if (format === 'json') {
+      return this.progress.exportJson(session.user.id)
+    }
+    const rows = await this.progress.ruleGroups(session.user.id)
+    return toCsv(RULE_PROGRESS_COLUMNS, rows.map(exportRow))
+  }
+
+  @Get('export/mistakes')
+  async exportMistakes(
+    @CurrentSession() session: SignedIn,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const mistakes = await this.progress.recentMistakes(session.user.id)
+    response.attachment('mistakes.csv')
+    return toCsv(MISTAKE_COLUMNS, mistakes.map(flattenMistake))
   }
 }
