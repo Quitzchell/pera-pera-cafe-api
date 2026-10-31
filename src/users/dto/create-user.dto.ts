@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer'
-import { IsEmail, Matches, MaxLength } from 'class-validator'
+import { Allow, Matches } from 'class-validator'
 import { normalizeUsername, USERNAME_PATTERN } from '../../auth/credentials'
 
 export class CreateUserDto {
@@ -9,7 +9,8 @@ export class CreateUserDto {
   @Matches(USERNAME_PATTERN, { message: 'username must be 3-30 characters: a-z, 0-9, _ or -' })
   username: string
 
-  @IsEmail()
-  @MaxLength(254)
-  email: string
+  // shortcut: accepted and ignored so the deployed frontend can still invite users; remove once
+  // the frontend no longer sends an email.
+  @Allow()
+  email?: unknown
 }

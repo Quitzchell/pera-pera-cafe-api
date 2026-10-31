@@ -9,7 +9,7 @@ describe('Progress (e2e)', () => {
   beforeEach(async () => {
     t = await createApp()
     await seedVerbs(t.prisma)
-    learnerId = (await createUser(t, { email: 'learner@example.com' })).id
+    learnerId = (await createUser(t, { username: 'learner' })).id
     learner = await signIn(t, 'learner')
   })
 
@@ -62,7 +62,7 @@ describe('Progress (e2e)', () => {
   })
 
   it('reads settings without creating them', async () => {
-    await createUser(t, { email: 'admin@example.com', role: Role.ADMIN })
+    await createUser(t, { username: 'admin', role: Role.ADMIN })
     const admin = await signIn(t, 'admin')
     await t.http().get(`/api/admin/users/${learnerId}/progress`).set(admin).expect(200)
     await t.http().get('/api/progress').set(learner).expect(200)
@@ -179,14 +179,14 @@ describe('Progress (e2e)', () => {
 
   it('shows learners only their own progress, and admins anyone', async () => {
     await playRound(learner)
-    await createUser(t, { email: 'other@example.com' })
+    await createUser(t, { username: 'other' })
     const other = await signIn(t, 'other')
     const { body: otherProgress } = await t.http().get('/api/progress').set(other).expect(200)
     expect(otherProgress.totals.attempts).toBe(0)
 
     await t.http().get(`/api/admin/users/${learnerId}/progress`).set(other).expect(403)
 
-    await createUser(t, { email: 'admin@example.com', role: Role.ADMIN })
+    await createUser(t, { username: 'admin', role: Role.ADMIN })
     const admin = await signIn(t, 'admin')
     const { body: own } = await t.http().get('/api/progress').set(learner).expect(200)
     await t
