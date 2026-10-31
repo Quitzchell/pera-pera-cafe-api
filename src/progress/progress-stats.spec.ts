@@ -3,6 +3,10 @@ import {
   currentStreak,
   localDate,
   RuleGroupStats,
+  exportRow,
+  flattenMistake,
+  MISTAKE_COLUMNS,
+  RULE_PROGRESS_COLUMNS,
   toCsv,
   weakestFirst,
 } from './progress-stats'
@@ -70,11 +74,45 @@ describe('accuracy and ordering', () => {
 })
 
 describe('toCsv', () => {
-  it('writes a header and one line per rule group', () => {
-    expect(toCsv([stats({})])).toBe(
-      'form,ruleGroup,attemptCount,accuracy,box,lastPracticedAt\n' +
-        'TE,GODAN_KU,4,0.5,1,2026-10-29T10:00:00.000Z\n',
+  it('writes a header and one line per rule group, dueAt included', () => {
+    expect(toCsv(RULE_PROGRESS_COLUMNS, [exportRow(stats({}))])).toBe(
+      'form,ruleGroup,attemptCount,accuracy,box,lastPracticedAt,dueAt\n' +
+        'TE,GODAN_KU,4,0.5,1,2026-10-29T10:00:00.000Z,2026-11-01T00:00:00.000Z\n',
     )
-    expect(toCsv([])).toBe('form,ruleGroup,attemptCount,accuracy,box,lastPracticedAt\n')
+    expect(toCsv(RULE_PROGRESS_COLUMNS, [])).toBe(
+      'form,ruleGroup,attemptCount,accuracy,box,lastPracticedAt,dueAt\n',
+    )
+  })
+
+  it.each([
+    ['plain', 'plain'],
+    ['書いて', '書いて'],
+    ['a,b', '"a,b"'],
+    ['say "hi"', '"say ""hi"""'],
+    ['two\nlines', '"two\nlines"'],
+    ['=HYPERLINK("x")', `"'=HYPERLINK(""x"")"`],
+    ['+1', "'+1"],
+    ['-1', "'-1"],
+    ['@SUM(A1)', "'@SUM(A1)"],
+  ])('writes the answer %p as %p', (answer, field) => {
+    expect(toCsv(['answer'], [{ answer }])).toBe(`answer\n${field}\n`)
+  })
+
+  it('writes a mistake as one flat row, with empty cells when there is no expected form', () => {
+    const mistake = {
+      createdAt: new Date('2026-10-31T09:00:00Z'),
+      mode: 'EXAM',
+      verb: { dictionaryForm: '書く', reading: 'かく' },
+      form: 'TE' as const,
+      ruleGroup: 'GODAN_KU' as const,
+      expected: { kanji: '書いて', kana: 'かいて' },
+      answer: 'かきて',
+    }
+    const rows = [flattenMistake(mistake), flattenMistake({ ...mistake, expected: null })]
+    expect(toCsv(MISTAKE_COLUMNS, rows)).toBe(
+      'createdAt,mode,dictionaryForm,reading,form,ruleGroup,expectedKanji,expectedKana,answer\n' +
+        '2026-10-31T09:00:00.000Z,EXAM,書く,かく,TE,GODAN_KU,書いて,かいて,かきて\n' +
+        '2026-10-31T09:00:00.000Z,EXAM,書く,かく,TE,GODAN_KU,,,かきて\n',
+    )
   })
 })

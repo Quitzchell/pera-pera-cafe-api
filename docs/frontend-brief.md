@@ -253,10 +253,12 @@ Signed in = needs the `session` cookie. CSRF = needs `X-CSRF-Token`.
 | `GET /progress` | signed in | `200 Progress` |
 | `GET /progress/export?format=csv` | signed in | `200` file `progress.csv` |
 | `GET /progress/export?format=json` | signed in | `200` file `progress.json` |
+| `GET /progress/export/mistakes` | signed in | `200` file `mistakes.csv` |
 
-Both responses have `Content-Disposition: attachment`, so a plain link (same site, cookie included) downloads them.
+All three responses have `Content-Disposition: attachment`, so a plain link (same site, cookie included) downloads them. Offer three buttons: progress CSV, mistakes CSV and JSON (everything in one file).
 
-- **CSV:** one row per form + rule group, with the columns `form, ruleGroup, attemptCount, accuracy, box, lastPracticedAt`.
+- **Progress CSV:** one row per form + rule group: `form, ruleGroup, attemptCount, accuracy, box, lastPracticedAt, dueAt`.
+- **Mistakes CSV:** the last 30 wrong first answers, newest first: `createdAt, mode, dictionaryForm, reading, form, ruleGroup, expectedKanji, expectedKana, answer`. The expected cells are empty when the admin later changed the verb so it no longer has that form. Values that a spreadsheet would run as a formula (starting with `=`, `+`, `-` or `@`) get a `'` in front.
 - **JSON:** one object:
 
 ```ts
