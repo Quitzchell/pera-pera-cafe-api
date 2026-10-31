@@ -159,7 +159,7 @@ describe('Progress (e2e)', () => {
     expect(body.totals.dueToday).toBe(1)
   })
 
-  it('exports one row per rule group as CSV or JSON', async () => {
+  it('exports one row per rule group as CSV', async () => {
     await playRound(learner)
 
     const csv = await t.http().get('/api/progress/export?format=csv').set(learner).expect(200)
@@ -169,12 +169,86 @@ describe('Progress (e2e)', () => {
     expect(header).toBe('form,ruleGroup,attemptCount,accuracy,box,lastPracticedAt')
     expect(lines.length).toBeGreaterThan(0)
 
+    await t.http().get('/api/progress/export?format=xml').set(learner).expect(400)
+  })
+
+  it('exports totals, rule progress and recent mistakes as JSON', async () => {
+    await playRound(learner)
+
     const json = await t.http().get('/api/progress/export').set(learner).expect(200)
     expect(json.get('Content-Disposition')).toMatch(/^attachment; filename="?progress\.json"?$/)
-    expect(json.body).toHaveLength(lines.length)
-    expect(Object.keys(json.body[0])).toEqual(header.split(','))
+    const { body } = json
+    expect(Object.keys(body)).toEqual(['exportedAt', 'totals', 'ruleProgress', 'recentMistakes'])
+    expect(Date.now() - Date.parse(body.exportedAt)).toBeLessThan(60_000)
+    expect(body.totals).toEqual({ rounds: 1, attempts: 5, accuracy: 0.8, streak: 1 })
 
-    await t.http().get('/api/progress/export?format=xml').set(learner).expect(400)
+    const { body: progress } = await t.http().get('/api/progress').set(learner).expect(200)
+    expect(body.ruleProgress).toHaveLength(progress.ruleGroups.length)
+    expect(Object.keys(body.ruleProgress[0])).toEqual([
+      'form',
+      'ruleGroup',
+      'attemptCount',
+      'accuracy',
+      'box',
+      'lastPracticedAt',
+      'dueAt',
+    ])
+
+    const missed = await t.prisma.attempt.findFirstOrThrow({
+      where: { isCorrect: false },
+      include: { drillItem: true },
+    })
+    const expected = await expectedAnswer(t.prisma, missed.drillItemId)
+    const verb = await t.prisma.verb.findUniqueOrThrow({ where: { id: missed.verbId } })
+    expect(body.recentMistakes).toEqual([
+      {
+        createdAt: missed.createdAt.toISOString(),
+        mode: 'STANDARD',
+        verb: { dictionaryForm: verb.dictionaryForm, reading: verb.reading },
+        form: missed.form,
+        ruleGroup: missed.ruleGroup,
+        expected: { kanji: expected.kanji, kana: expected.kana },
+        answer: 'wrong',
+      },
+    ])
+  })
+
+  it('exports only the 30 most recent mistakes, newest first', async () => {
+    const verb = await t.prisma.verb.findFirstOrThrow({ where: { dictionaryForm: '書く' } })
+    const start = Date.now() - 3_600_000
+    await t.prisma.drillRound.create({
+      data: {
+        userId: learnerId,
+        mode: 'EXAM',
+        items: {
+          create: Array.from({ length: 32 }, (_, i) => ({
+            verbId: verb.id,
+            form: 'TE' as const,
+            position: i,
+            attempt: {
+              create: {
+                userId: learnerId,
+                verbId: verb.id,
+                form: 'TE' as const,
+                ruleGroup: 'GODAN_KU' as const,
+                answer: `wrong ${i}`,
+                isCorrect: i === 31,
+                createdAt: new Date(start + i * 1000),
+              },
+            },
+          })),
+        },
+      },
+    })
+
+    const { body } = await t.http().get('/api/progress/export?format=json').set(learner).expect(200)
+    expect(body.recentMistakes).toHaveLength(30)
+    expect(body.recentMistakes[0]).toMatchObject({
+      answer: 'wrong 30',
+      mode: 'EXAM',
+      expected: { kanji: '書いて', kana: 'かいて' },
+    })
+    expect(body.recentMistakes[29].answer).toBe('wrong 1')
   })
 
   it('shows learners only their own progress, and admins anyone', async () => {

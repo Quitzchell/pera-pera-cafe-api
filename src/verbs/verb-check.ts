@@ -1,5 +1,6 @@
 import {
   ConjugatableVerb,
+  Conjugation,
   ConjugationError,
   ConjugationForm,
   conjugate,
@@ -136,4 +137,20 @@ export function prepareVerb<
     baseVerbId: base?.id ?? null,
   }
   return { data, warnings: checkVerb(data, base) }
+}
+
+// The verb as it is now, which the admin may have changed since an answer was given; null if
+// it no longer has this form.
+export function conjugateIfPossible(
+  verb: Verb & { baseVerb: Verb | null },
+  form: ConjugationForm,
+): Conjugation | null {
+  try {
+    return conjugate(toConjugatable(verb, verb.baseVerb ?? undefined), form)
+  } catch (error) {
+    if (error instanceof ConjugationError) {
+      return null
+    }
+    throw error
+  }
 }
