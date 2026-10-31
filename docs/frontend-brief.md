@@ -276,7 +276,7 @@ Export columns, one row per form + rule group: `form, ruleGroup, attemptCount, a
 - The admin cannot disable or delete their own account (`400`).
 - Usernames are lowercased by the API (`New-Learner` becomes `new-learner`); anything outside 3–30 characters of a–z, 0–9, `_` and `-` is `400 username must be 3-30 characters: a-z, 0-9, _ or -`. Sign-in ignores case too.
 - Duplicate username: `409 A user with this username already exists`.
-- The app stores **no email addresses**. For now the API accepts and ignores an `email` field on `POST /admin/users`, so older frontends keep working; stop sending it.
+- The app stores **no email addresses**; sending an `email` field is a `400`.
 - Verb create body: `{ dictionaryForm, reading, meaning, jlptLevel, verbClass?, excludedForms?, isActive?, baseVerbId? }`.
   - `reading` in hiragana.
   - For a compound, send `baseVerbId` (e.g. the id of する) and leave out `verbClass`; `dictionaryForm` and `reading` must end in the base verb (勉強する / べんきょうする).
