@@ -27,7 +27,7 @@ export class ProgressController {
     @Query() { format }: ExportQueryDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    response.attachment(`progress.${format}`)
+    response.attachment(`progress-${await this.progress.fileStamp(session.user.id)}.${format}`)
     if (format === 'json') {
       return this.progress.exportJson(session.user.id)
     }
@@ -41,7 +41,7 @@ export class ProgressController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const mistakes = await this.progress.recentMistakes(session.user.id)
-    response.attachment('mistakes.csv')
+    response.attachment(`mistakes-${await this.progress.fileStamp(session.user.id)}.csv`)
     return toCsv(MISTAKE_COLUMNS, mistakes.map(flattenMistake))
   }
 }
