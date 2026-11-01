@@ -4,6 +4,7 @@ import {
   localDate,
   RuleGroupStats,
   exportRow,
+  fileStamp,
   flattenMistake,
   MISTAKE_COLUMNS,
   RULE_PROGRESS_COLUMNS,
@@ -19,6 +20,16 @@ describe('localDate', () => {
     ['2026-10-30T03:00:00Z', 'America/New_York', '2026-10-29'],
   ])('%s in %s is %s', (iso, timeZone, day) => {
     expect(localDate(new Date(iso), timeZone)).toBe(day)
+  })
+})
+
+describe('fileStamp', () => {
+  it.each([
+    ['2026-10-29T23:05:00Z', 'UTC', '2026-10-29-2305'],
+    ['2026-10-29T23:05:00Z', 'Europe/Amsterdam', '2026-10-30-0005'],
+    ['2026-10-29T16:30:00Z', 'Asia/Tokyo', '2026-10-30-0130'],
+  ])('%s in %s is %s', (iso, timeZone, stamp) => {
+    expect(fileStamp(new Date(iso), timeZone)).toBe(stamp)
   })
 })
 

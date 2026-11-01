@@ -6,6 +6,7 @@ import {
   accuracy,
   currentStreak,
   exportRow,
+  fileStamp,
   localDate,
   RecentMistake,
   RuleGroupStats,
@@ -54,6 +55,11 @@ export class ProgressService {
       streak: currentStreak(roundDays, today),
       ruleGroups,
     }
+  }
+
+  async fileStamp(userId: string) {
+    const { timeZone } = await this.settings.get(userId)
+    return fileStamp(new Date(), timeZone)
   }
 
   async exportJson(userId: string) {
