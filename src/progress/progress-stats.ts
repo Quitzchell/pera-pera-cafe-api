@@ -23,6 +23,17 @@ export const localDate = (date: Date, timeZone: string) =>
     day: '2-digit',
   }).format(date)
 
+// YYYY-MM-DD-HHmm in the given IANA time zone, for export filenames.
+export const fileStamp = (date: Date, timeZone: string) => {
+  const time = new Intl.DateTimeFormat('en-GB', {
+    timeZone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).format(date)
+  return `${localDate(date, timeZone)}-${time.replace(':', '')}`
+}
+
 const previousDay = (day: string) =>
   new Date(Date.parse(`${day}T00:00:00Z`) - 86_400_000).toISOString().slice(0, 10)
 
