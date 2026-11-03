@@ -87,7 +87,9 @@ function groupsFor(mode: DrillMode, candidates: Candidate[], random: () => numbe
 }
 
 export function buildRound(input: RoundInput): PlannedItem[] {
-  const { mode, candidates, size, now, random = Math.random } = input
+  const { mode, candidates, now, random = Math.random } = input
+  // A contrast round is made of pairs, so a round of 1 would stay empty.
+  const size = mode === 'CONTRAST' ? Math.max(input.size, 2) : input.size
   const progress = new Map(input.progress.map((p) => [`${p.form}:${p.ruleGroup}`, p]))
 
   const slotRank = (slot: string): Rank => {

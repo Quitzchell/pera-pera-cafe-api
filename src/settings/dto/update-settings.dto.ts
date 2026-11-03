@@ -29,7 +29,7 @@ export class UpdateSettingsDto {
 
   @IsOmittable()
   @IsInt()
-  @Min(5)
+  @Min(1)
   @Max(50)
   roundSize?: number
 

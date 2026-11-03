@@ -132,5 +132,14 @@ describe('buildRound', () => {
       })
       expect(items).toHaveLength(4)
     })
+
+    it('still gives one pair when the round size is 1', () => {
+      const items = build({
+        mode: 'CONTRAST',
+        candidates: many('ku', 'GODAN_KU', ['TE', 'PAST'], 20),
+        size: 1,
+      })
+      expect(items).toHaveLength(2)
+    })
   })
 })

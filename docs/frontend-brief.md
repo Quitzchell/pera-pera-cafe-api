@@ -102,7 +102,7 @@ interface User {
 interface Settings {
   enabledForms: ConjugationForm[] // at least 1; default: all 16
   jlptLevels: JlptLevel[]         // at least 1; default: ['N5', 'N4']
-  roundSize: number               // 5–50; default 20
+  roundSize: number               // 1–50; default 5
   romajiInput: boolean            // default false
   showFurigana: boolean           // default true
   timeZone: string                // IANA name; default 'UTC'
@@ -340,7 +340,7 @@ No sign-up page.
 - **Settings**:
   - enabled forms;
   - JLPT levels;
-  - round size (5–50);
+  - round size (1–50);
   - romaji input on/off;
   - furigana on/off.
   - The time zone is set automatically (section 1).
