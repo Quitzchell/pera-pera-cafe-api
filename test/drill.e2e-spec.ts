@@ -45,7 +45,7 @@ describe('Drill (e2e)', () => {
     expect(body).toEqual({
       enabledForms: expect.arrayContaining(['TE', 'POTENTIAL_CONDITIONAL']),
       jlptLevels: ['N5', 'N4'],
-      roundSize: 20,
+      roundSize: 5,
       romajiInput: false,
       showFurigana: true,
       timeZone: 'UTC',
@@ -56,7 +56,8 @@ describe('Drill (e2e)', () => {
     expect(updated.body).toMatchObject({ roundSize: 10, enabledForms: ['TE'], showFurigana: false })
 
     for (const invalid of [
-      { roundSize: 2 },
+      { roundSize: 0 },
+      { roundSize: 51 },
       { enabledForms: [] },
       { jlptLevels: ['N9'] },
       { roundSize: null },
