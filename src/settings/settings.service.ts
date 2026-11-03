@@ -7,7 +7,7 @@ import { UpdateSettingsDto } from './dto/update-settings.dto'
 const DEFAULTS = {
   enabledForms: [...ALL_FORMS],
   jlptLevels: [JlptLevel.N5, JlptLevel.N4],
-  roundSize: 20,
+  roundSize: 5,
   romajiInput: false,
   showFurigana: true,
   timeZone: 'UTC',
