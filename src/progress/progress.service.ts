@@ -52,7 +52,7 @@ export class ProgressService {
         roundsFinished: rounds.length,
         dueToday: ruleGroups.filter((row) => localDate(row.dueAt, timeZone) <= today).length,
       },
-      streak: currentStreak(roundDays, today),
+      ...currentStreak(roundDays, today),
       ruleGroups,
     }
   }
