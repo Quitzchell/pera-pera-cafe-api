@@ -34,18 +34,39 @@ export const fileStamp = (date: Date, timeZone: string) => {
   return `${localDate(date, timeZone)}-${time.replace(':', '')}`
 }
 
-const previousDay = (day: string) =>
-  new Date(Date.parse(`${day}T00:00:00Z`) - 86_400_000).toISOString().slice(0, 10)
+const MAX_SPENT_SKIPS = 2
+const SKIP_RETURN_DAYS = 7
 
-// Days in a row with a finished round. Today without a round yet does not break it.
-export function currentStreak(roundDays: Set<string>, today: string): number {
-  let day = roundDays.has(today) ? today : previousDay(today)
+const dayNumber = (day: string) => Date.parse(`${day}T00:00:00Z`) / 86_400_000
+
+// Days with a finished round. A missed day spends a skip, which returns seven days later; a
+// miss with none left resets the streak. Today without a round yet spends nothing.
+export function currentStreak(roundDays: Set<string>, today: string) {
+  const studied = new Set([...roundDays].map(dayNumber))
+  const end = dayNumber(today)
   let streak = 0
-  while (roundDays.has(day)) {
-    streak++
-    day = previousDay(day)
+  let spent: number[] = []
+  for (let day = Math.min(...studied); day < end; day++) {
+    if (studied.has(day)) {
+      streak++
+      continue
+    }
+    // Without a streak to save, a long absence must not drain the skips.
+    if (streak === 0) {
+      continue
+    }
+    spent = spent.filter((spentOn) => day - spentOn < SKIP_RETURN_DAYS)
+    if (spent.length < MAX_SPENT_SKIPS) {
+      spent.push(day)
+    } else {
+      streak = 0
+    }
   }
-  return streak
+  return {
+    streak: streak + (studied.has(end) ? 1 : 0),
+    streakSkipsLeft:
+      MAX_SPENT_SKIPS - spent.filter((spentOn) => end - spentOn < SKIP_RETURN_DAYS).length,
+  }
 }
 
 export const weakestFirst = (a: RuleGroupStats, b: RuleGroupStats) =>

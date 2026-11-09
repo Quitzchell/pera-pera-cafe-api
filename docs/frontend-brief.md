@@ -175,7 +175,8 @@ interface Progress {
     roundsFinished: number // finished rounds with at least one answer
     dueToday: number      // rule groups due by the end of today (learner's time zone)
   }
-  streak: number          // days in a row with a finished round that has at least one answer; today without one yet does not break it
+  streak: number          // days with a finished round that has at least one answer; up to two missed days in any seven are forgiven and not counted; today without one yet does not break it
+  streakSkipsLeft: number // 0 to 2 forgiven misses available today; a used one returns seven days later
   ruleGroups: RuleGroupProgress[] // weakest first
 }
 
