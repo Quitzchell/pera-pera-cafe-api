@@ -36,11 +36,13 @@ describe('Admin users (e2e)', () => {
     expect(new Date(body.expiresAt).getTime()).toBeGreaterThan(Date.now() + 6.9 * 86_400_000)
 
     const token = tokenFrom(body.link)
+    await t.http().post('/api/auth/check-invite').send({ token }).expect(204)
     await t
       .http()
       .post('/api/auth/accept-invite')
       .send({ token, password: 'too short' })
       .expect(400)
+    await t.http().post('/api/auth/check-invite').send({ token }).expect(204)
     await t
       .http()
       .post('/api/auth/accept-invite')
@@ -55,6 +57,11 @@ describe('Admin users (e2e)', () => {
         error: 'Bad Request',
         message: 'This link is invalid or has expired',
       })
+    await t.http().post('/api/auth/check-invite').send({ token }).expect(400, {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'This link is invalid or has expired',
+    })
 
     const learner = await signIn(t, 'new-learner', NEW_PASSWORD)
     const me = await t.http().get('/api/auth/me').set(learner).expect(200)
@@ -85,6 +92,11 @@ describe('Admin users (e2e)', () => {
       .send({ username: 'new' })
       .expect(201)
     await t.prisma.authToken.updateMany({ data: { expiresAt: new Date(Date.now() - 1000) } })
+    await t
+      .http()
+      .post('/api/auth/check-invite')
+      .send({ token: tokenFrom(body.link) })
+      .expect(400)
 
     await t
       .http()
@@ -103,6 +115,13 @@ describe('Admin users (e2e)', () => {
       .post('/api/auth/accept-invite')
       .send({ token: tokenFrom(reset.body.link), password: NEW_PASSWORD })
       .expect(400)
+    await t
+      .http()
+      .post('/api/auth/check-invite')
+      .send({ token: tokenFrom(reset.body.link) })
+      .expect(400)
+    await t.http().post('/api/auth/check-invite').send({ token: 'made-up' }).expect(400)
+    await t.http().post('/api/auth/check-invite').send({}).expect(400)
   })
 
   it('rejects a duplicate username with 409', async () => {
@@ -134,12 +153,16 @@ describe('Admin users (e2e)', () => {
       .set(admin)
       .expect(201)
     expect(body.link).toMatch(/^http:\/\/app\.test\/reset\//)
+    const token = tokenFrom(body.link)
 
+    await t.http().post('/api/auth/check-reset').send({ token }).expect(204)
+    await t.http().post('/api/auth/check-invite').send({ token }).expect(400)
     await t
       .http()
       .post('/api/auth/reset-password')
-      .send({ token: tokenFrom(body.link), password: NEW_PASSWORD })
+      .send({ token, password: NEW_PASSWORD })
       .expect(204)
+    await t.http().post('/api/auth/check-reset').send({ token }).expect(400)
 
     await t.http().get('/api/auth/me').set(oldSession).expect(401)
     await t
@@ -162,6 +185,32 @@ describe('Admin users (e2e)', () => {
       .set(admin)
       .expect(201)
     expect(body.link).toMatch(/\/invite\//)
+  })
+
+  it('only the newest link works once a user is active again', async () => {
+    const { body } = await t
+      .http()
+      .post('/api/admin/users')
+      .set(admin)
+      .send({ username: 'newbie' })
+      .expect(201)
+    const invite = tokenFrom(body.link)
+    const resetLink = () =>
+      t.http().post(`/api/admin/users/${body.user.id}/reset-link`).set(admin).expect(201)
+
+    const secondInvite = tokenFrom((await resetLink()).body.link)
+    await t.http().post('/api/auth/check-invite').send({ token: invite }).expect(400)
+    await t
+      .http()
+      .post('/api/auth/accept-invite')
+      .send({ token: secondInvite, password: NEW_PASSWORD })
+      .expect(204)
+    await t.http().post('/api/auth/check-invite').send({ token: secondInvite }).expect(400)
+
+    const reset = tokenFrom((await resetLink()).body.link)
+    expect((await resetLink()).body.link).toMatch(/\/reset\//)
+    await t.http().post('/api/auth/check-reset').send({ token: reset }).expect(400)
+    await t.http().post('/api/auth/check-invite').send({ token: secondInvite }).expect(400)
   })
 
   it('disables a user for good: re-enabling does not revive old sessions', async () => {
@@ -199,7 +248,17 @@ describe('Admin users (e2e)', () => {
       t.http().patch(`/api/admin/users/${learner.id}`).set(admin).send(body)
 
     await patch({ disabled: true }).expect(200)
+    await t
+      .http()
+      .post('/api/auth/check-reset')
+      .send({ token: tokenFrom(body.link) })
+      .expect(400)
     await patch({ disabled: false }).expect(200)
+    await t
+      .http()
+      .post('/api/auth/check-reset')
+      .send({ token: tokenFrom(body.link) })
+      .expect(400)
     await t
       .http()
       .post('/api/auth/reset-password')

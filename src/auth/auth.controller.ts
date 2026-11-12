@@ -7,7 +7,7 @@ import { AuthService } from './auth.service'
 import type { SignedIn } from './auth.service'
 import { SESSION_COOKIE, sessionCookieOptions } from './cookies'
 import { LoginDto } from './dto/login.dto'
-import { SetPasswordDto } from './dto/set-password.dto'
+import { SetPasswordDto, TokenDto } from './dto/set-password.dto'
 
 @Controller('auth')
 export class AuthController {
@@ -41,6 +41,23 @@ export class AuthController {
   @Get('csrf')
   csrf(@CurrentSession() session: SignedIn) {
     return { csrfToken: session.csrfToken }
+  }
+
+  // POST keeps the token out of access logs.
+  @Public()
+  @UseGuards(ThrottlerGuard)
+  @Post('check-invite')
+  @HttpCode(204)
+  async checkInvite(@Body() dto: TokenDto) {
+    await this.auth.checkToken(AuthTokenType.INVITE, dto.token)
+  }
+
+  @Public()
+  @UseGuards(ThrottlerGuard)
+  @Post('check-reset')
+  @HttpCode(204)
+  async checkReset(@Body() dto: TokenDto) {
+    await this.auth.checkToken(AuthTokenType.PASSWORD_RESET, dto.token)
   }
 
   @Public()

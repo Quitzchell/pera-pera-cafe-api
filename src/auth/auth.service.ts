@@ -115,7 +115,7 @@ export class AuthService {
     return { token, expiresAt }
   }
 
-  async setPasswordWithToken(type: AuthTokenType, token: string, password: string) {
+  async checkToken(type: AuthTokenType, token: string) {
     const record = await this.prisma.authToken.findUnique({
       where: { tokenHash: hashToken(token) },
       include: { user: { select: { status: true } } },
@@ -129,6 +129,11 @@ export class AuthService {
     ) {
       throw invalidLink()
     }
+    return record
+  }
+
+  async setPasswordWithToken(type: AuthTokenType, token: string, password: string) {
+    const record = await this.checkToken(type, token)
     // Hashed only for a valid token, so random tokens cost no argon2 work.
     const passwordHash = await hashPassword(password)
 
