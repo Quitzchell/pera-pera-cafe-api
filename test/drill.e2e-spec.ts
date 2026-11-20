@@ -1,6 +1,6 @@
 import { ConjugationForm } from '../src/conjugation'
 import { rebuildRuleProgress } from '../src/drill/rule-progress'
-import { createApp, createUser, expectedAnswer, seedVerbs, signIn, TestApp, VERBS } from './helpers'
+import { createApp, createUser, expectedAnswer, seedVerbs, signIn, TestApp } from './helpers'
 
 interface RoundItem {
   id: string
@@ -26,6 +26,12 @@ describe('Drill (e2e)', () => {
 
   const settings = (body: object) =>
     t.http().patch('/api/me/settings').set(learner).send(body).expect(200)
+  // Rounds hold 5 questions, so tests that need certain verbs in the round switch the others off.
+  const onlyVerbs = (...dictionaryForms: string[]) =>
+    t.prisma.verb.updateMany({
+      where: { dictionaryForm: { notIn: dictionaryForms } },
+      data: { isActive: false },
+    })
   const startRound = (mode: string) =>
     t.http().post('/api/drill/rounds').set(learner).send({ mode })
   const answer = (
@@ -53,7 +59,7 @@ describe('Drill (e2e)', () => {
     expect(body.enabledForms).toHaveLength(16)
 
     const updated = await settings({ roundSize: 10, enabledForms: ['TE'], showFurigana: false })
-    expect(updated.body).toMatchObject({ roundSize: 10, enabledForms: ['TE'], showFurigana: false })
+    expect(updated.body).toMatchObject({ roundSize: 5, enabledForms: ['TE'], showFurigana: false })
 
     for (const invalid of [
       { roundSize: 0 },
@@ -68,8 +74,13 @@ describe('Drill (e2e)', () => {
     }
   })
 
+  it('gives 5 questions whatever round size the client sends', async () => {
+    await settings({ roundSize: 10 })
+    const { body: round } = await startRound('STANDARD').expect(201)
+    expect(round.items).toHaveLength(5)
+  })
+
   it('plays a full standard round and keeps progress rebuildable from the attempt log', async () => {
-    await settings({ roundSize: 5 })
     const { body: round } = await startRound('STANDARD').expect(201)
     const items = round.items as RoundItem[]
 
@@ -131,7 +142,8 @@ describe('Drill (e2e)', () => {
   })
 
   it('marks ra-nuki wrong with a note', async () => {
-    await settings({ roundSize: VERBS.length, enabledForms: ['POTENTIAL'] })
+    await onlyVerbs('見る')
+    await settings({ enabledForms: ['POTENTIAL'] })
     const { body: round } = await startRound('STANDARD').expect(201)
     const item = (round.items as RoundItem[]).find((i) => i.verb.dictionaryForm === '見る')!
 
@@ -157,7 +169,6 @@ describe('Drill (e2e)', () => {
   })
 
   it('offers 4 choices in exam mode, one of them correct', async () => {
-    await settings({ roundSize: 5 })
     const { body: round } = await startRound('EXAM').expect(201)
 
     for (const item of round.items as RoundItem[]) {
@@ -167,7 +178,7 @@ describe('Drill (e2e)', () => {
   })
 
   it('pairs forms of the same verb back to back in contrast mode', async () => {
-    await settings({ roundSize: 6, enabledForms: ['TE', 'PAST'] })
+    await settings({ enabledForms: ['TE', 'PAST'] })
     const { body: round } = await startRound('CONTRAST').expect(201)
     const items = round.items as RoundItem[]
 
@@ -182,7 +193,6 @@ describe('Drill (e2e)', () => {
   })
 
   it('lets a learner retry a missed item as practice only', async () => {
-    await settings({ roundSize: 5 })
     const { body: round } = await startRound('STANDARD').expect(201)
     const [missed, other] = round.items as RoundItem[]
     const retry = (headers: Record<string, string>, itemId: string, value: string) =>
@@ -231,7 +241,8 @@ describe('Drill (e2e)', () => {
   })
 
   it('keeps progress consistent when answers arrive at the same time', async () => {
-    await settings({ roundSize: VERBS.length, enabledForms: ['TE'] })
+    await onlyVerbs('書く', '泳ぐ', '食べる', '見る', '来る')
+    await settings({ enabledForms: ['TE'] })
     const { body: round } = await startRound('STANDARD').expect(201)
 
     await Promise.all(
@@ -255,7 +266,8 @@ describe('Drill (e2e)', () => {
   })
 
   it('copes with a verb the admin changed during the round', async () => {
-    await settings({ roundSize: VERBS.length, enabledForms: ['TE'] })
+    await onlyVerbs('書く', '泳ぐ')
+    await settings({ enabledForms: ['TE'] })
     const { body: round } = await startRound('STANDARD').expect(201)
     const items = round.items as RoundItem[]
     const itemFor = (dictionaryForm: string) =>

@@ -7,7 +7,6 @@ import { UpdateSettingsDto } from './dto/update-settings.dto'
 const DEFAULTS = {
   enabledForms: [...ALL_FORMS],
   jlptLevels: [JlptLevel.N5, JlptLevel.N4],
-  roundSize: 5,
   romajiInput: false,
   showFurigana: true,
   timeZone: 'UTC',
@@ -16,31 +15,35 @@ const DEFAULTS = {
 const select = {
   enabledForms: true,
   jlptLevels: true,
-  roundSize: true,
   romajiInput: true,
   showFurigana: true,
   timeZone: true,
 }
+
+// shortcut: the live frontend still reads roundSize; once the redesigned frontend is released, drop it from the API and drop the unused UserSettings.roundSize column.
+const LEGACY = { roundSize: 5 }
 
 @Injectable()
 export class SettingsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async get(userId: string) {
-    return (await this.prisma.userSettings.findUnique({ where: { userId }, select })) ?? DEFAULTS
+    const settings = await this.prisma.userSettings.findUnique({ where: { userId }, select })
+    return { ...(settings ?? DEFAULTS), ...LEGACY }
   }
 
-  update(userId: string, dto: UpdateSettingsDto) {
-    const { enabledForms, jlptLevels, roundSize, romajiInput, showFurigana, timeZone } = dto
-    const changes = { enabledForms, jlptLevels, roundSize, romajiInput, showFurigana, timeZone }
+  async update(userId: string, dto: UpdateSettingsDto) {
+    const { enabledForms, jlptLevels, romajiInput, showFurigana, timeZone } = dto
+    const changes = { enabledForms, jlptLevels, romajiInput, showFurigana, timeZone }
     const defined = Object.fromEntries(
       Object.entries(changes).filter(([, value]) => value !== undefined),
     ) as Partial<typeof DEFAULTS>
-    return this.prisma.userSettings.upsert({
+    const settings = await this.prisma.userSettings.upsert({
       where: { userId },
       create: { ...DEFAULTS, ...defined, userId },
       update: changes,
       select,
     })
+    return { ...settings, ...LEGACY }
   }
 }

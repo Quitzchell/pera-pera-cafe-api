@@ -18,6 +18,10 @@ import { buildRound } from './round-builder'
 
 type VerbWithBase = Verb & { baseVerb: Verb | null }
 
+const ROUND_SIZE = 5
+// Contrast rounds are built from pairs, so an odd size would leave no room for a new pair.
+const CONTRAST_ROUND_SIZE = 6
+
 const engineVerb = (verb: VerbWithBase) => toConjugatable(verb, verb.baseVerb ?? undefined)
 
 const verbSummary = ({ dictionaryForm, reading, meaning }: Verb) => ({
@@ -55,7 +59,7 @@ export class DrillService {
       mode,
       candidates,
       progress,
-      size: settings.roundSize,
+      size: mode === DrillMode.CONTRAST ? CONTRAST_ROUND_SIZE : ROUND_SIZE,
       now: new Date(),
     })
     if (planned.length === 0) {
