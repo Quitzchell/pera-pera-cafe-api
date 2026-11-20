@@ -27,6 +27,7 @@ export class UpdateSettingsDto {
   @IsEnum(JlptLevel, { each: true })
   jlptLevels?: JlptLevel[]
 
+  // shortcut: accepted and ignored so the live frontend can still save; remove with LEGACY in SettingsService.
   @IsOmittable()
   @IsInt()
   @Min(1)
