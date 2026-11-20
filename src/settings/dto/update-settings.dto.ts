@@ -1,14 +1,4 @@
-import {
-  ArrayNotEmpty,
-  ArrayUnique,
-  IsArray,
-  IsBoolean,
-  IsEnum,
-  IsInt,
-  IsTimeZone,
-  Max,
-  Min,
-} from 'class-validator'
+import { ArrayNotEmpty, ArrayUnique, IsArray, IsBoolean, IsEnum, IsTimeZone } from 'class-validator'
 import { ConjugationForm, JlptLevel } from '../../../generated/prisma/client'
 import { IsOmittable } from '../../validation'
 
@@ -26,13 +16,6 @@ export class UpdateSettingsDto {
   @ArrayUnique()
   @IsEnum(JlptLevel, { each: true })
   jlptLevels?: JlptLevel[]
-
-  // shortcut: accepted and ignored so the live frontend can still save; remove with LEGACY in SettingsService.
-  @IsOmittable()
-  @IsInt()
-  @Min(1)
-  @Max(50)
-  roundSize?: number
 
   @IsOmittable()
   @IsBoolean()

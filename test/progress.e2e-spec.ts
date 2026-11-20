@@ -19,7 +19,6 @@ describe('Progress (e2e)', () => {
 
   // Answers every item correctly except the first, then finishes the round.
   async function playRound(headers: Record<string, string>) {
-    await t.http().patch('/api/me/settings').set(headers).send({ roundSize: 5 }).expect(200)
     const { body: round } = await t
       .http()
       .post('/api/drill/rounds')

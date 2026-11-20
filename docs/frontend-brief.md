@@ -102,7 +102,6 @@ interface User {
 interface Settings {
   enabledForms: ConjugationForm[] // at least 1; default: all 16
   jlptLevels: JlptLevel[]         // at least 1; default: ['N5', 'N4']
-  roundSize: number               // legacy: always 5 and ignored on write; rounds have 5 questions (contrast: 6)
   romajiInput: boolean            // default false
   showFurigana: boolean           // default true
   timeZone: string                // IANA name; default 'UTC'

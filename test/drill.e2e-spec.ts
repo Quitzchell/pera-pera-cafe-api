@@ -51,22 +51,19 @@ describe('Drill (e2e)', () => {
     expect(body).toEqual({
       enabledForms: expect.arrayContaining(['TE', 'POTENTIAL_CONDITIONAL']),
       jlptLevels: ['N5', 'N4'],
-      roundSize: 5,
       romajiInput: false,
       showFurigana: true,
       timeZone: 'UTC',
     })
     expect(body.enabledForms).toHaveLength(16)
 
-    const updated = await settings({ roundSize: 10, enabledForms: ['TE'], showFurigana: false })
-    expect(updated.body).toMatchObject({ roundSize: 5, enabledForms: ['TE'], showFurigana: false })
+    const updated = await settings({ enabledForms: ['TE'], showFurigana: false })
+    expect(updated.body).toEqual({ ...body, enabledForms: ['TE'], showFurigana: false })
 
     for (const invalid of [
-      { roundSize: 0 },
-      { roundSize: 51 },
+      { roundSize: 5 },
       { enabledForms: [] },
       { jlptLevels: ['N9'] },
-      { roundSize: null },
       { enabledForms: null },
       { timeZone: null },
     ]) {
@@ -74,8 +71,7 @@ describe('Drill (e2e)', () => {
     }
   })
 
-  it('gives 5 questions whatever round size the client sends', async () => {
-    await settings({ roundSize: 10 })
+  it('gives 5 questions', async () => {
     const { body: round } = await startRound('STANDARD').expect(201)
     expect(round.items).toHaveLength(5)
   })
